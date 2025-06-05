@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Sign Up</title>
+  <style>
+    body {
+      background-color: #edeefa;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      width: 300px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #67103d;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .toggle {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .toggle a {
+      color: #67103d;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="form-title">Login</h2>
+    <form id="auth-form">
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <div id="extra-fields" style="display: none;">
+        <input type="email" id="email" placeholder="Email" required />
+      </div>
+      <button type="submit" id="submit-btn">Login</button>
+    </form>
+    <div class="toggle">
+      <span id="toggle-text">Don't have an account? <a id="toggle-link">Sign up</a></span>
+    </div>
+  </div>
+
+  <script>
+    const formTitle = document.getElementById('form-title');
+    const toggleLink = document.getElementById('toggle-link');
+    const toggleText = document.getElementById('toggle-text');
+    const submitBtn = document.getElementById('submit-btn');
+    const extraFields = document.getElementById('extra-fields');
+    let isLogin = true;
+
+    toggleLink.addEventListener('click', () => {
+      isLogin = !isLogin;
+
+      if (isLogin) {
+        formTitle.textContent = 'Login';
+        submitBtn.textContent = 'Login';
+        toggleText.innerHTML = `Don't have an account? <a id="toggle-link">Sign up</a>`;
+        extraFields.style.display = 'none';
+      } else {
+        formTitle.textContent = 'Sign Up';
+        submitBtn.textContent = 'Sign Up';
+        toggleText.innerHTML = `Already have an account? <a id="toggle-link">Login</a>`;
+        extraFields.style.display = 'block';
+      }
+
+      // Re-attach event listener after changing innerHTML
+      document.getElementById('toggle-link').addEventListener('click', arguments.callee);
+    });
+
+    document.getElementById('auth-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (isLogin) {
+        alert(`Logging in with:\nUsername: ${username}\nPassword: ${password}`);
+      } else {
+        const email = document.getElementById('email').value;
+        alert(`Signing up with:\nUsername: ${username}\nEmail: ${email}\nPassword: ${password}`);
+      }
+    });
+  </script>
+</body>
+</html>
