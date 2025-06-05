@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import { signToken } from '../config/jwt.js';
+import jwt from 'jsonwebtoken';
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -23,9 +24,11 @@ export const login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    const token = signToken({ id: user._id, role: user.role });
-    res.json({ token, role: user.role });
-  } catch (err) {
-    res.status(500).json({ error: 'Server error' });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET,{
+      expiresIn: '1d'
+    });
+    res.status(200).json({message: 'Login successful' });
+  }catch (err) {
+    res.status(500).json({ error: 'login failed' });
   }
 };
