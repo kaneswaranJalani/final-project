@@ -62,3 +62,24 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+
+export const addFeedback = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { message, rating } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404);
+      throw new Error('User not found');
+    }
+
+    user.feedbacks.push({ message, rating });
+    await user.save();
+
+    res.status(201).json({ message: 'Feedback added successfully', feedbacks: user.feedbacks });
+  } catch (err) {
+    next(err);
+  }
+};

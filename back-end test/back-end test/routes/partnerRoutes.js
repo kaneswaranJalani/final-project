@@ -1,17 +1,24 @@
 import express from 'express';
-import auth from '../middlewares/authMiddleware.js';
+import auth, { isAdmin } from '../middlewares/authMiddleware.js';
 import { allowRoles } from '../middlewares/roleMiddleware.js';
 import {
-  getProfile,
-  updateProfile,
-  getLinkedUsers,
+  getAllPartners,
+  getPartnerById,
+  createPartner,
+  updatePartner,
+  deletePartner,
 } from '../controllers/partnerController.js';
 
 const router = express.Router();
 
-router.use(auth, allowRoles('partner'));
-router.get('/profile', getProfile);
-router.put('/profile', updateProfile);
-router.get('/users', getLinkedUsers);
+// All routes require authentication first
+router.use(auth);
+
+// Admin-only routes
+router.get('/', isAdmin, getAllPartners);
+router.get('/:id', allowRoles('admin'), getPartnerById);
+router.post('/', allowRoles('admin'), createPartner);
+router.put('/:id', allowRoles('admin'), updatePartner);
+router.delete('/:id', allowRoles('admin'), deletePartner);
 
 export default router;
