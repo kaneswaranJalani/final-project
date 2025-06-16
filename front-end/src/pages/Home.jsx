@@ -1,86 +1,82 @@
-function Home() {
-    return (
-      <div className="min-h-screen flex flex-col">
-        {/* Navigation Bar */}
-        <header className="bg-white shadow-sm">
-          <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex space-x-8">
-                <a href="/" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900">Home</a>
-                <a href="/about" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">About</a>
-                <a href="/services" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">Services</a>
-                <a href="/contact" className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700">Contact</a>
-              </div>
-              <div className="flex items-center space-x-4">
-                <a href="/login" className="text-sm font-medium text-gray-500 hover:text-gray-700">Login</a>
-                <a href="/signup" className="ml-8 inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">Sign Up</a>
-              </div>
+import React from 'react';
+
+const Home = () => {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <section className="bg-blue-600 text-white py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Ride the City</h1>
+          <h2 className="text-2xl md:text-3xl font-semibold mb-6">Your Way</h2>
+          <p className="text-lg mb-8 max-w-2xl mx-auto">
+            Discover affordable bike rentals at 100+ locations across the city. Perfect for commuting, exploring, or just enjoying a ride.
+          </p>
+          <button className="bg-white text-blue-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300">
+            Register
+          </button>
+        </div>
+      </section>
+
+      {/* Cycle Parade Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <div className="bg-white p-8 rounded-xl shadow-md">
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">Cycle parade</h3>
+          <p className="text-gray-600">
+            A cycle parade is a public event where a group of people ride bicycles together along a planned route. It is often organized to promote eco-friendly transportation, health awareness, or special causes. Participants of all ages join the parade, making it a fun and energetic event. Cycle parades help spread important messages while encouraging the use of bicycles as a clean and healthy mode of transport.
+          </p>
+        </div>
+      </section>
+
+      {/* Footer/Collection Section */}
+      <footer className="bg-[#67103d]  shadow-md text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Ridclop Info */}
+          <div>
+            <h4 className="text-xl font-bold mb-4">Rideloop</h4>
+            <p className="text-gray-300">
+              Making urban mobility <br/> sustainable, affordable,<br/> and fun since 2018.
+            </p>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-xl font-bold mb-4">Quick links</h4>
+            <ul className="space-y-2">
+              {['home', 'about', 'items', 'services'].map((link) => (
+                <li key={link}>
+                  <a href="#" className="text-gray-300 hover:text-white capitalize">{link}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Services & Contact */}
+          <div>
+            <h4 className="text-xl font-bold mb-4">Services</h4>
+            <ul className="space-y-2 mb-6">
+              {['daily rentals', 'corporate programme', 'group tours', 'hourly rental'].map((service) => (
+                <li key={service}>
+                  <a href="#" className="text-gray-300 hover:text-white capitalize">{service}</a>
+                </li>
+              ))}
+            </ul>
             </div>
-          </nav>
-        </header>
-  
-        {/* Main Content */}
-        <main className="flex-grow">
-          {/* Hero Section */}
-          <section className="bg-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto text-center">
-              <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-                <span className="block">Welcome to Our Website</span>
-              </h1>
-              <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                This is the home page. You can add more content here.
-              </p>
-              <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-                <div className="rounded-md shadow">
-                  <button className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10">
-                    Learn More
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
-  
-          {/* Featured Content */}
-          <section className="py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-              <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">Featured Content</h2>
-              <div className="grid gap-8 md:grid-cols-3">
-                {/* Service 1 */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Service 1</h3>
-                  <p className="text-gray-600">Description of service 1.</p>
-                </div>
-                
-                {/* Service 2 */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Service 2</h3>
-                  <p className="text-gray-600">Description of service 2.</p>
-                </div>
-                
-                {/* Service 3 */}
-                <div className="bg-white p-6 rounded-lg shadow-md">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Service 3</h3>
-                  <p className="text-gray-600">Description of service 3.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-  
-        {/* Footer */}
-        <footer className="bg-gray-800">
-          <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col items-center">
-              <p className="text-white text-sm mb-4">&copy; 2024 Your Company. All rights reserved.</p>
-              <div className="flex space-x-6">
-                <a href="/privacy" className="text-gray-400 hover:text-white">Privacy Policy</a>
-                <a href="/terms" className="text-gray-400 hover:text-white">Terms of Service</a>
-              </div>
+          {/* Contact Info */}
+          <div>
+            <h4 className="text-xl font-bold mb-4">Contact</h4>
+            <p className="text-gray-300 mb-4">
+              For inquiries or support, reach out to us at:
+            </p>
+            <div className="text-gray-300 space-y-2">
+              <p>+94 1234 456 789</p>
+              <p>jalanj@gmail.com</p>
+              <p>Achchelu/Neavelly</p>
             </div>
           </div>
-        </footer>
-      </div>
-    );
-  }
-  
-  export default Home;
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Home;
