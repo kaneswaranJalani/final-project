@@ -14,6 +14,7 @@ import orderRoutes from './routes/orderRoutes.js';
 import bicycleRoutes from './routes/bicycleRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';  // Correct import
+import trackingRoutes from './routes/trackingRoutes.js'; // Optional, if you want to track events
 
 // import { errorHandler } from './middlewares/errorHandler.js'; // Uncomment if you have global error handling
 
@@ -36,6 +37,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/bicycles', bicycleRoutes);  // Better to use /api/bicycles for consistency
 app.use('/api/payments', paymentRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/tracking', trackingRoutes); // Optional, if you want to track events
 
 // Test route
 app.get('/', (req, res) => {
