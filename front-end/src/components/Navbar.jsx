@@ -35,24 +35,32 @@ function Navbar() {
                         >
                             Signup
                         </Link>
-                        <Link 
-                            to="/register" 
-                            className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                        >
-                            Register
-                        </Link>
-                        <Link 
+                        
+                        {/* <Link 
                             to="/feedback" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             Feedback
-                        </Link>
+                        </Link> */}
                         <Link 
                             to="/payment" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             Payment
                         </Link>
+                        <Link 
+                            to="/AdminDashboard" 
+                            className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            AdminDashboard
+                        </Link>
+                        {/* <Link 
+                            to="/SuccessMessagePage" 
+                            className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                           SuccessMessagePage
+                        </Link> */}
+
                     </div>
                 </div>
             </div>

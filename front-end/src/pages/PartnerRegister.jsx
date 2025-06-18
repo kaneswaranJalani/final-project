@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PartnerRegister = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     lastName: '',
@@ -12,6 +15,7 @@ const PartnerRegister = () => {
     businessAddress: '',
     taxId: '',
     availableVehicles: '',
+    numberAvailable: '',
     vehicleType: '',
     additionalDetails: '',
     serviceArea: '',
@@ -27,7 +31,7 @@ const PartnerRegister = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
+
     if (type === 'checkbox') {
       let updatedPreferences = [...formData.rentalPreferences];
       if (checked) {
@@ -35,16 +39,16 @@ const PartnerRegister = () => {
       } else {
         updatedPreferences = updatedPreferences.filter(item => item !== value);
       }
-      setFormData({...formData, rentalPreferences: updatedPreferences});
+      setFormData({ ...formData, rentalPreferences: updatedPreferences });
     } else {
-      setFormData({...formData, [name]: value});
+      setFormData({ ...formData, [name]: value });
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission here
     console.log(formData);
+    // You can send this data to backend here
   };
 
   return (
@@ -57,143 +61,31 @@ const PartnerRegister = () => {
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="lastName">Last name</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="confirmPassword">Confirm password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="primaryPhone">Primary phone number</label>
-              <input
-                type="tel"
-                id="primaryPhone"
-                name="primaryPhone"
-                value={formData.primaryPhone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="secondaryPhone">Secondary phone number</label>
-              <input
-                type="tel"
-                id="secondaryPhone"
-                name="secondaryPhone"
-                value={formData.secondaryPhone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-700 mb-2" htmlFor="businessAddress">Business address</label>
-              <input
-                type="text"
-                id="businessAddress"
-                name="businessAddress"
-                value={formData.businessAddress}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+            {/* Name fields */}
+            <inputField label="Name" name="name" value={formData.name} onChange={handleChange} required />
+            <inputField label="Last Name" name="lastName" value={formData.lastName} onChange={handleChange} required />
+            {/* Email */}
+            <inputField type="email" label="Email" name="email" value={formData.email} onChange={handleChange} required fullWidth />
+            {/* Passwords */}
+            <inputField type="password" label="Password" name="password" value={formData.password} onChange={handleChange} required />
+            <inputField type="password" label="Confirm Password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+            {/* Phones */}
+            <inputField type="tel" label="Primary Phone Number" name="primaryPhone" value={formData.primaryPhone} onChange={handleChange} required />
+            <inputField type="tel" label="Secondary Phone Number" name="secondaryPhone" value={formData.secondaryPhone} onChange={handleChange} />
+            {/* Address */}
+            <inputField label="Business Address" name="businessAddress" value={formData.businessAddress} onChange={handleChange} required fullWidth />
           </div>
         </div>
 
-        {/* Tax-ID business registration */}
+        {/* Business Details */}
         <div className="mb-8 border-t pt-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Tax-ID business registration</h2>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Tax-ID Business Registration</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="availableVehicles">Available vehicles</label>
-              <input
-                type="text"
-                id="availableVehicles"
-                name="availableVehicles"
-                value={formData.availableVehicles}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-gray-700 mb-2" htmlFor="numberAvailable">Number available</label>
-              <input
-                type="number"
-                id="numberAvailable"
-                name="numberAvailable"
-                value={formData.numberAvailable}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <inputField label="Available Vehicles" name="availableVehicles" value={formData.availableVehicles} onChange={handleChange} />
+            <inputField type="number" label="Number Available" name="numberAvailable" value={formData.numberAvailable} onChange={handleChange} />
+            <inputField label="Vehicle Type" name="vehicleType" value={formData.vehicleType} onChange={handleChange} fullWidth />
             <div className="md:col-span-2">
-              <label className="block text-gray-700 mb-2" htmlFor="vehicleType">Vehicle type</label>
-              <input
-                type="text"
-                id="vehicleType"
-                name="vehicleType"
-                value={formData.vehicleType}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-gray-700 mb-2" htmlFor="additionalDetails">Additional details</label>
+              <label className="block text-gray-700 mb-2" htmlFor="additionalDetails">Additional Details</label>
               <textarea
                 id="additionalDetails"
                 name="additionalDetails"
@@ -201,30 +93,27 @@ const PartnerRegister = () => {
                 onChange={handleChange}
                 rows="3"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
+              />
             </div>
           </div>
         </div>
 
-        {/* Service area coverage */}
+        {/* Service Area */}
         <div className="mb-8 border-t pt-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Service area coverage</h2>
-          <div className="mb-2">
-            <label className="block text-gray-700 mb-2">Teams in bicycle rental business</label>
-            <input
-              type="text"
-              id="serviceArea"
-              name="serviceArea"
-              value={formData.serviceArea}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Service Area Coverage</h2>
+          <label className="block text-gray-700 mb-2">Teams in bicycle rental business</label>
+          <input
+            type="text"
+            name="serviceArea"
+            value={formData.serviceArea}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
 
-        {/* Rental preferences */}
+        {/* Rental Preferences */}
         <div className="mb-8 border-t pt-6">
-          <h2 className="text-xl font-semibold text-gray-700 mb-4">Rental preferences</h2>
+          <h2 className="text-xl font-semibold text-gray-700 mb-4">Rental Preferences</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {rentalOptions.map((option) => (
               <div key={option} className="flex items-center">
@@ -245,7 +134,15 @@ const PartnerRegister = () => {
           </div>
         </div>
 
-        <div className="flex justify-end">
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mt-6">
+          <button
+            type="button"
+            className="px-4 py-2 border text-gray-600 rounded-md hover:text-black"
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -257,5 +154,7 @@ const PartnerRegister = () => {
     </div>
   );
 };
+
+// Optional: You can refactor input fields into a reusable component later
 
 export default PartnerRegister;
