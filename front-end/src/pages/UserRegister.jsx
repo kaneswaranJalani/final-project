@@ -23,183 +23,187 @@ const UserRegister = () => {
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
-    let updatedPreferences = [...form.rentalPreferences];
-    if (checked) {
-      updatedPreferences.push(value);
-    } else {
-      updatedPreferences = updatedPreferences.filter((pref) => pref !== value);
-    }
-    setForm({ ...form, rentalPreferences: updatedPreferences });
+    const updated = checked
+      ? [...form.rentalPreferences, value]
+      : form.rentalPreferences.filter((item) => item !== value);
+    setForm({ ...form, rentalPreferences: updated });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Password match validation (optional)
+    if (form.password !== form.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Normally you’d send the form to the backend here
     console.log("User Registered:", form);
-    // Here you can call your backend API
+
+    // Navigate to success page
+    navigate("/SuccessfulRegister");
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f6fa] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] flex items-center justify-center px-4">
       <form
-        className="bg-white p-8 rounded-xl shadow-lg w-full max-w-3xl"
+        className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-3xl border border-gray-100"
         onSubmit={handleSubmit}
       >
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-2">
-          User Registration
-        </h2>
-        <p className="text-center text-sm text-gray-500 mb-6">
-          Create the account to start renting bicycle today
-        </p>
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-extrabold text-[#67103d]">User Registration</h2>
+          <p className="text-sm text-gray-500 mt-1">Start your ride today</p>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block mb-1 text-sm font-medium">Name</label>
+            <label className="block text-sm font-medium text-gray-700">First Name</label>
             <input
               type="text"
               name="firstName"
               value={form.firstName}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="First Name"
+              placeholder="John"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
-
           <div>
-            <label className="block mb-1 text-sm font-medium">Last name</label>
+            <label className="block text-sm font-medium text-gray-700">Last Name</label>
             <input
               type="text"
               name="lastName"
               value={form.lastName}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Last Name"
+              placeholder="Doe"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block mb-1 text-sm font-medium">Email</label>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Email"
+              placeholder="example@mail.com"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Password</label>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Password"
+              placeholder="••••••••"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
-
           <div>
-            <label className="block mb-1 text-sm font-medium">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Confirm Password"
+              placeholder="••••••••"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Primary phone number</label>
+            <label className="block text-sm font-medium text-gray-700">Primary Phone</label>
             <input
               type="tel"
               name="primaryPhone"
               value={form.primaryPhone}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Primary Phone"
+              placeholder="+94 77XXXXXXX"
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
-
           <div>
-            <label className="block mb-1 text-sm font-medium">Secondary phone number</label>
+            <label className="block text-sm font-medium text-gray-700">Secondary Phone</label>
             <input
               type="tel"
               name="secondaryPhone"
               value={form.secondaryPhone}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Secondary Phone"
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              placeholder="Optional"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block mb-1 text-sm font-medium">Address</label>
+            <label className="block text-sm font-medium text-gray-700">Address</label>
             <textarea
               name="address"
               value={form.address}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="Address"
-              rows="3"
+              rows={3}
+              placeholder="123 Main St, Colombo, Sri Lanka"
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
               required
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block mb-1 text-sm font-medium">ID Proof Number</label>
+            <label className="block text-sm font-medium text-gray-700">ID Proof Number</label>
             <input
               type="text"
               name="idProof"
               value={form.idProof}
               onChange={handleChange}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              placeholder="ID Proof Number"
+              placeholder="NIC / Passport / License No."
               required
+              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
             />
           </div>
 
-          <div className="md:col-span-2 mt-4">
-            <label className="block mb-1 text-sm font-medium">Rental Preferences</label>
+          {/* Preferences */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Rental Preferences
+            </label>
             <div className="flex flex-wrap gap-4">
-              {["Daily commute", "Leisure rides", "Fitness", "Touring/Adventure"].map(
-                (preference, idx) => (
-                  <label key={idx} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      value={preference}
-                      checked={form.rentalPreferences.includes(preference)}
-                      onChange={handleCheckboxChange}
-                      className="h-4 w-4"
-                    />
-                    <span className="text-sm">{preference}</span>
-                  </label>
-                )
-              )}
+              {["Daily commute", "Leisure rides", "Fitness", "Touring/Adventure"].map((pref, i) => (
+                <label key={i} className="flex items-center space-x-2 text-sm text-gray-700">
+                  <input
+                    type="checkbox"
+                    value={pref}
+                    checked={form.rentalPreferences.includes(pref)}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 text-[#67103d] border-gray-300 rounded focus:ring-[#67103d]"
+                  />
+                  <span>{pref}</span>
+                </label>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end mt-6 gap-4">
+        {/* Buttons */}
+        <div className="flex justify-end gap-4 mt-8">
           <button
             type="button"
-            className="px-4 py-2 rounded-md border text-gray-600 hover:text-black"
             onClick={() => navigate(-1)}
+            className="px-4 py-2 border border-gray-400 rounded-md text-gray-700 hover:border-[#67103d] hover:text-[#67103d] transition"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700"
+            className="px-6 py-2 rounded-md bg-[#67103d] text-white hover:bg-[#50052c] transition font-semibold"
           >
             Register
           </button>

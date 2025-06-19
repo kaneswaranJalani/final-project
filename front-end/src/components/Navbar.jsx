@@ -7,8 +7,8 @@ function Navbar() {
                 <div className="flex justify-between h-16 items-center">
                     {/* Logo */}
                     <div className="flex-shrink-0">
-                        <Link 
-                            to="/" 
+                         <Link 
+                            to="/"
                             className="text-2xl font-bold text-white font-island-moments"
                         >
                             Rideloop
@@ -22,6 +22,18 @@ function Navbar() {
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             Home
+                        </Link>
+                        <Link 
+                            to="/Item" 
+                            className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            Item
+                        </Link>
+                        <Link 
+                            to="/SelectItem" 
+                            className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                        >
+                            SelectItem
                         </Link>
                         <Link 
                             to="/login" 
@@ -54,12 +66,12 @@ function Navbar() {
                         >
                             AdminDashboard
                         </Link>
-                        {/* <Link 
-                            to="/SuccessMessagePage" 
+                        <Link 
+                            to="/SuccessfulRegister" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
-                           SuccessMessagePage
-                        </Link> */}
+                           SuccessfulRegister
+                        </Link>
 
                     </div>
                 </div>
