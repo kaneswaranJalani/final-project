@@ -9,7 +9,13 @@ import {
   FiMail,
   FiBell,
   FiSearch,
-  FiMenu
+  FiMenu,
+  FiUser,
+  FiDollarSign,
+  FiTrendingUp,
+  FiShoppingBag,
+  FiBox,
+  FiActivity
 } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -17,10 +23,10 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   const stats = [
-    { title: 'Total Users', value: '2,453', change: '+12%', trend: 'up' },
-    { title: 'Total Orders', value: '1,234', change: '+5%', trend: 'up' },
-    { title: 'Revenue', value: '$34,245', change: '-2%', trend: 'down' },
-    { title: 'Conversion', value: '3.6%', change: '+1.2%', trend: 'up' }
+    { title: 'Total Users', value: '2,453', change: '+12%', trend: 'up', icon: <FiUser size={24} /> },
+    { title: 'Total Orders', value: '1,234', change: '+5%', trend: 'up', icon: <FiShoppingBag size={24} /> },
+    { title: 'Revenue', value: '$34,245', change: '-2%', trend: 'down', icon: <FiDollarSign size={24} /> },
+    { title: 'Conversion', value: '3.6%', change: '+1.2%', trend: 'up', icon: <FiTrendingUp size={24} /> }
   ];
 
   const recentOrders = [
@@ -119,9 +125,12 @@ const AdminDashboard = () => {
                 {stats.map((stat, idx) => (
                   <div key={idx} className="bg-white p-6 rounded-xl shadow-sm">
                     <div className="flex justify-between items-start">
-                      <div>
-                        <p className="text-gray-500 text-sm">{stat.title}</p>
-                        <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
+                      <div className="flex items-center space-x-3">
+                        <div className="text-indigo-600">{stat.icon}</div>
+                        <div>
+                          <p className="text-gray-500 text-sm">{stat.title}</p>
+                          <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
+                        </div>
                       </div>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -200,7 +209,7 @@ const AdminDashboard = () => {
                   {topProducts.map((product, i) => (
                     <div key={i} className="flex items-center mb-4">
                       <div className="w-10 h-10 rounded-md bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4">
-                        {i + 1}
+                        <FiBox />
                       </div>
                       <div className="flex-1">
                         <h4 className="font-medium">{product.name}</h4>
@@ -220,8 +229,8 @@ const AdminDashboard = () => {
                 <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
                 {activities.map((activity, idx) => (
                   <div key={idx} className="flex items-start mb-4">
-                    <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold mr-3">
-                      {activity.user.charAt(0)}
+                    <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 mr-3">
+                      <FiActivity />
                     </div>
                     <div>
                       <p className="font-medium">

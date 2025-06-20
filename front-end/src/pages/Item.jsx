@@ -107,7 +107,7 @@ const Item = () => {
               <h3 className="text-lg font-semibold text-gray-800">{bike.name}</h3>
               <p className="text-sm text-gray-500">{bike.price}</p>
               <button className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e]">
-                Buy
+                Rent
               </button>
             </div>
           </div>

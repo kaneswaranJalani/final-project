@@ -31,7 +31,7 @@ const SelectItem = () => {
         <Link to="/Payment" className="flex-1">
           <button className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-[#67103d] to-[#8b1c4d] text-white font-semibold rounded-lg shadow hover:shadow-lg hover:opacity-90 transition-all">
             <FiShoppingCart size={20} />
-            Buy Now
+            Rent Now
           </button>
         </Link>
 

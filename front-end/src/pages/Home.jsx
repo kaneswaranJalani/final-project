@@ -43,8 +43,8 @@ const Home = () => {
             Discover affordable bike rentals at 100+ locations across the city. Perfect for commuting, exploring, or just enjoying a ride.
           </p>
           <Link to="/register">
-            <button className="bg-[#67103d] text-white font-bold py-3 px-8 rounded-full hover:bg-gray-100 hover:text-[#67103d] transition duration-300">
-              Register
+            <button className="bg-gradient-to-r from-[#67103d] to-[#8b1c4d] text-white font-bold py-3 px-8 rounded-full  hover:scale-[1.03] transition-transform  duration-400">
+              Join with us
             </button>
           </Link>
         </div>
