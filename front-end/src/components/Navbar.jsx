@@ -29,12 +29,12 @@ function Navbar() {
                         >
                             Item
                         </Link>
-                        <Link 
+                        {/* <Link 
                             to="/SelectItem" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             SelectItem
-                        </Link>
+                        </Link> */}
                         <Link 
                             to="/login" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
@@ -54,24 +54,24 @@ function Navbar() {
                         >
                             Feedback
                         </Link> */}
-                        <Link 
+                        {/* <Link 
                             to="/payment" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             Payment
-                        </Link>
-                        <Link 
+                        </Link> */}
+                        {/* <Link 
                             to="/AdminDashboard" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                             AdminDashboard
-                        </Link>
-                        <Link 
+                        </Link> */}
+                        {/* <Link 
                             to="/SuccessfulRegister" 
                             className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                         >
                            SuccessfulRegister
-                        </Link>
+                        </Link> */}
 
                     </div>
                 </div>
