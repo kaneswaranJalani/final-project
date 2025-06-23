@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const UserRegister = () => {
   const navigate = useNavigate();
@@ -201,12 +202,14 @@ const UserRegister = () => {
           >
             Cancel
           </button>
+          <Link to="/SuccessfulRegister">
           <button
             type="submit"
             className="px-6 py-2 rounded-md bg-[#67103d] text-white hover:bg-[#50052c] transition font-semibold"
           >
             Register
           </button>
+          </Link>
         </div>
       </form>
     </div>

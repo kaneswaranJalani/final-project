@@ -1,20 +1,23 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-[#67103d]">
-          Sign in to your account
+          login to your account
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Or{" "}
+          <Link to="/Signup">
           <a
             href="#"
             className="font-medium text-[#67103d] hover:text-[#4c092b] transition"
           >
             create a new account
           </a>
+          </Link>
         </p>
       </div>
 
@@ -94,7 +97,7 @@ const Login = () => {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#67103d] hover:bg-[#4c092b] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#67103d]"
               >
-                Sign in
+                 login
               </button>
             </div>
           </form>

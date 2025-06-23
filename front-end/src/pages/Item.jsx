@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { FiSearch, FiUser, FiSmile, FiShoppingCart } from "react-icons/fi";
 
 const bikes = [
@@ -111,10 +112,12 @@ const Item = () => {
             <div className="p-4 space-y-2 text-center">
               <h3 className="text-lg font-semibold text-gray-800">{bike.name}</h3>
               <p className="text-sm text-gray-500">{bike.price}</p>
-              <button className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2">
-                <FiShoppingCart />
-                Rent
-              </button>
+              <Link to="/SelectItem">
+                <button className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2">
+                  <FiShoppingCart />
+                  Rent
+                </button>
+              </Link>
             </div>
           </div>
         ))}

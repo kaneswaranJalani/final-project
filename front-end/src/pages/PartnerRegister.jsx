@@ -152,12 +152,14 @@ const PartnerRegister = () => {
           >
             Cancel
           </button>
+          <Link to="/SuccessfulRegister">
           <button
             type="submit"
             className="px-6 py-2 bg-[#67103d] text-white font-semibold rounded-lg shadow-md hover:bg-[#55072f] focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:ring-offset-2 transition"
           >
             Register
           </button>
+          </Link> 
         </div>
       </form>
     </div>
