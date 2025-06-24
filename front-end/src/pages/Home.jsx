@@ -12,7 +12,7 @@ const Home = () => {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const eventDate = new Date('2024-06-15T00:00:00').getTime();
+      const eventDate = new Date('2026-06-15T00:00:00').getTime();
       const now = new Date().getTime();
       const distance = eventDate - now;
       

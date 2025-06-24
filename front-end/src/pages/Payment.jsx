@@ -8,9 +8,9 @@ const Payment = () => {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center bg-[#67103d] text-white p-3 rounded-full mb-4">
+          {/* <div className="inline-flex items-center justify-center bg-[#67103d] text-white p-3 rounded-full mb-4">
             <FaBicycle className="text-xl" />
-          </div>
+          </div> */}
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Complete Your Rental</h1>
           <p className="text-gray-500">Secure payment processed with encryption</p>
         </div>

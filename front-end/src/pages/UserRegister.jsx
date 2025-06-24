@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const UserRegister = () => {
   const navigate = useNavigate();
@@ -16,6 +15,8 @@ const UserRegister = () => {
     idProof: "",
     rentalPreferences: [],
   });
+
+  const [agreeTerms, setAgreeTerms] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -33,16 +34,17 @@ const UserRegister = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Password match validation (optional)
     if (form.password !== form.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
 
-    // Normally you’d send the form to the backend here
-    console.log("User Registered:", form);
+    if (!agreeTerms) {
+      alert("You must agree to the Terms and Conditions to proceed.");
+      return;
+    }
 
-    // Navigate to success page
+    console.log("User Registered:", form);
     navigate("/SuccessfulRegister");
   };
 
@@ -171,7 +173,6 @@ const UserRegister = () => {
             />
           </div>
 
-          {/* Preferences */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Rental Preferences
@@ -191,6 +192,25 @@ const UserRegister = () => {
               ))}
             </div>
           </div>
+
+          {/* Terms & Conditions */}
+          <div className="md:col-span-2 mt-6">
+            <label className="flex items-center space-x-2 text-sm text-gray-700">
+              <input
+                type="checkbox"
+                checked={agreeTerms}
+                onChange={(e) => setAgreeTerms(e.target.checked)}
+                className="h-4 w-4 text-[#67103d] border-gray-300 rounded focus:ring-[#67103d]"
+                required
+              />
+              <span>
+                I agree to the{" "}
+                <Link to="/terms" className="text-[#67103d] underline hover:text-[#50052c]">
+                  Terms and Conditions
+                </Link>
+              </span>
+            </label>
+          </div>
         </div>
 
         {/* Buttons */}
@@ -202,14 +222,12 @@ const UserRegister = () => {
           >
             Cancel
           </button>
-          <Link to="/SuccessfulRegister">
           <button
             type="submit"
             className="px-6 py-2 rounded-md bg-[#67103d] text-white hover:bg-[#50052c] transition font-semibold"
           >
             Register
           </button>
-          </Link>
         </div>
       </form>
     </div>
