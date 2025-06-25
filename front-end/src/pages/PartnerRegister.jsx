@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
 
-
 // Reusable input field
 const InputField = ({ label, type = "text", name, value, onChange, required = false }) => (
   <div>
@@ -39,6 +38,8 @@ const PartnerRegister = () => {
     rentalPreferences: []
   });
 
+  const [agreePartnerTerms, setAgreePartnerTerms] = useState(false);
+
   const rentalOptions = [
     'Daily commute',
     'Leisure rides',
@@ -49,7 +50,7 @@ const PartnerRegister = () => {
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (type === 'checkbox') {
+    if (type === 'checkbox' && name === 'rentalPreferences') {
       const updatedPreferences = checked
         ? [...formData.rentalPreferences, value]
         : formData.rentalPreferences.filter(item => item !== value);
@@ -62,10 +63,12 @@ const PartnerRegister = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Add form validation if needed
-    console.log("Partner Data Submitted:", formData);
+    if (!agreePartnerTerms) {
+      alert("You must agree to the Terms and Conditions to proceed.");
+      return;
+    }
 
-    // After successful submission
+    console.log("Partner Data Submitted:", formData);
     navigate('/SuccessfulRegister');
   };
 
@@ -145,6 +148,25 @@ const PartnerRegister = () => {
           </div>
         </div>
 
+        {/* Terms and Conditions */}
+        <div className="mb-8">
+          <label className="flex items-center space-x-2 text-sm text-gray-700">
+            <input
+              type="checkbox"
+              checked={agreePartnerTerms}
+              onChange={(e) => setAgreePartnerTerms(e.target.checked)}
+              className="h-4 w-4 text-[#67103d] border-gray-300 rounded focus:ring-[#67103d]"
+              required
+            />
+            <span>
+              I agree to the{" "}
+              <Link to="/PartnerTerms" className="text-[#67103d] underline hover:text-[#50052c]">
+                Terms and Conditions
+              </Link>
+            </span>
+          </label>
+        </div>
+
         {/* Action Buttons */}
         <div className="flex justify-end gap-4">
           <button
@@ -154,14 +176,12 @@ const PartnerRegister = () => {
           >
             Cancel
           </button>
-          <Link to="/SuccessfulRegister">
           <button
             type="submit"
             className="px-6 py-2 bg-[#67103d] text-white font-semibold rounded-lg shadow-md hover:bg-[#55072f] focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:ring-offset-2 transition"
           >
             Register
           </button>
-          </Link> 
         </div>
       </form>
     </div>

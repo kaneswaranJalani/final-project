@@ -15,7 +15,7 @@ const SuccessMessagePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white to-gray-100  flex items-center justify-center p-4">
       <div className="bg-white rounded-xl shadow-xl overflow-hidden w-full max-w-md">
         {/* Header */}
         <div className="bg-[#67103d] p-6 text-white">
