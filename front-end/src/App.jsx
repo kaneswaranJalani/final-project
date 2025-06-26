@@ -15,6 +15,7 @@ import SuccessfulRegister from "./pages/SuccessfulRegister"
 import Item from "./pages/Item"
 import Terms from "./pages/Terms"
 import PartnerTerms from "./pages/PartnerTerms"
+// import UserHeader from "./pages/UserHeader"
 import { BrowserRouter as Router,Routes,Route } from "react-router-dom";
 function App() {
   
@@ -39,6 +40,7 @@ function App() {
       <Route path="/Item" element={<Item/>}/>
       <Route path="/Terms" element={<Terms/>}/>
       <Route path="/PartnerTerms" element={<PartnerTerms/>}/>
+      {/* <Route path="/UserHeader" element={<UserHeader/>}/> */}
      </Routes>
     {/* <Footer/> */}
      

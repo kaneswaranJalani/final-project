@@ -2,49 +2,20 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiSearch, FiUser, FiSmile, FiShoppingCart } from "react-icons/fi";
 
+import bike1 from "../assets/bike1.jpg";
+import bike2 from "../assets/bike2.jpg";
+import bike3 from "../assets/bike3.jpg";
+import bike4 from "../assets/bike4.jpg";
+import bike5 from "../assets/bike5.jpg";
+import bike6 from "../assets/bike6.jpg";
+
 const bikes = [
-  {
-    id: 1,
-    image: "/images/bike1.jpg",
-    name: "Speedster X",
-    price: "Rs. 12,000",
-    category: "Man"
-  },
-  {
-    id: 2,
-    image: "/images/bike2.jpg",
-    name: "Retro Lady",
-    price: "Rs. 10,500",
-    category: "Female"
-  },
-  {
-    id: 3,
-    image: "/images/bike3.jpg",
-    name: "Mountain Pro",
-    price: "Rs. 15,300",
-    category: "Man"
-  },
-  {
-    id: 4,
-    image: "/images/bike4.jpg",
-    name: "City Cruiser",
-    price: "Rs. 11,200",
-    category: "Child"
-  },
-  {
-    id: 5,
-    image: "/images/bike5.jpg",
-    name: "Dirt King",
-    price: "Rs. 14,000",
-    category: "Child"
-  },
-  {
-    id: 6,
-    image: "/images/bike6.jpg",
-    name: "Vintage Ride",
-    price: "Rs. 13,800",
-    category: "Man"
-  }
+  { id: 1, image: bike1, name: "Speedster X", price: "Rs. 1,000", category: "Man" },
+  { id: 2, image: bike2, name: "Retro Lady", price: "Rs. 1,500", category: "Female" },
+  { id: 3, image: bike3, name: "Mountain Pro", price: "Rs. 1,300", category: "Man" },
+  { id: 4, image: bike4, name: "City Cruiser", price: "Rs. 1,200", category: "Child" },
+  { id: 5, image: bike5, name: "Dirt King", price: "Rs. 1,000", category: "Child" },
+  { id: 6, image: bike6, name: "Vintage Ride", price: "Rs. 1,800", category: "Man" }
 ];
 
 const categories = [
@@ -68,7 +39,7 @@ const Item = () => {
     <div className="px-6 py-10 bg-gray-50 min-h-screen">
       {/* Search & Filter */}
       <div className="text-center space-y-4 mb-8">
-        <div className="relative w-1/2 mx-auto">
+        <div className="relative w-full max-w-md mx-auto">
           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
@@ -102,23 +73,21 @@ const Item = () => {
         {filteredBikes.map((bike) => (
           <div
             key={bike.id}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden p-4 text-center"
           >
             <img
               src={bike.image}
               alt={bike.name}
-              className="w-full h-56 object-cover"
+              className="w-48 h-32 object-cover mx-auto rounded"
             />
-            <div className="p-4 space-y-2 text-center">
-              <h3 className="text-lg font-semibold text-gray-800">{bike.name}</h3>
-              <p className="text-sm text-gray-500">{bike.price}</p>
-              <Link to="/SelectItem">
-                <button className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2">
-                  <FiShoppingCart />
-                  Rent
-                </button>
-              </Link>
-            </div>
+            <h3 className="text-lg font-semibold text-gray-800 mt-3">{bike.name}</h3>
+            <p className="text-sm text-gray-500">{bike.price}</p>
+            <Link to="/SelectItem">
+              <button className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2 mx-auto">
+                <FiShoppingCart />
+                Rent
+              </button>
+            </Link>
           </div>
         ))}
       </div>

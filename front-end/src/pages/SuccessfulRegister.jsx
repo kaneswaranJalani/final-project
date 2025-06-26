@@ -10,7 +10,7 @@ const SuccessfulRegister = () => {
   };
 
   const handleResendEmail = () => {
-    alert('✅ Confirmation email resent.');
+    alert(' Confirmation email resent.');
   };
 
   return (
@@ -33,7 +33,7 @@ const SuccessfulRegister = () => {
           </button>
 
           <div className="mt-6 text-center text-sm text-gray-500">
-            Didn’t receive the email?{' '}
+            Didn't receive the email?{' '}
             <button
               onClick={handleResendEmail}
               className="text-[#67103d] hover:underline font-medium transition"
