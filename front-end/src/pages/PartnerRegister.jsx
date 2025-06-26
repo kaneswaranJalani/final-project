@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from "react-router-dom";
+import axios from 'axios'; // ✅ ADD THIS
 
 // Reusable input field
 const InputField = ({ label, type = "text", name, value, onChange, required = false }) => (
@@ -60,7 +61,7 @@ const PartnerRegister = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!agreePartnerTerms) {
@@ -68,8 +69,20 @@ const PartnerRegister = () => {
       return;
     }
 
-    console.log("Partner Data Submitted:", formData);
-    navigate('/SuccessfulRegister');
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const res = await axios.post("http://localhost:5000/api/partner/register", formData);
+      alert("Partner registered successfully!");
+      navigate("/SuccessfulRegister"); // ✅ your success page
+    } catch (error) {
+      const errorMsg = error?.response?.data?.message || "Registration failed!";
+      alert(errorMsg);
+      console.error("Registration error:", error);
+    }
   };
 
   return (

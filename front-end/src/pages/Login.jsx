@@ -20,11 +20,12 @@ const Login = () => {
       return;
     }
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    localStorage.setItem("user", JSON.stringify({ email }));
-    navigate("/");
+    const userData = { role: email === 'jalani@gmail.com' ? 'admin':'user'};
+    if (userData.role === 'admin') {
+      navigate('/AdminDashboard');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -163,10 +164,9 @@ const Login = () => {
           <div className="bg-gray-50 px-8 py-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link
-                to="/signup"
-                className="font-medium text-[#67103d] hover:text-[#4c092b] transition"
-              >
+              <Link to="/register"
+                className="font-medium text-[#67103d] hover:text-[#4c092b] transition">
+              
                 Sign up
               </Link>
             </p>

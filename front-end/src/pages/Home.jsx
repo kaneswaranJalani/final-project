@@ -171,7 +171,7 @@ const Home = () => {
           </div>
 
           <a
-            href="https://docs.google.com/forms/d/1w3cAezRc0-tOozIB-S2C8IxyotAI2t5ubC7C2EOG_aQ/edit"
+            href="https://docs.google.com/forms/d/1MIxjSED-oELrJXk9EzIg8hj3XNpWQj3wmZNcwc94JeA/edit"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-[#67103d] text-white px-8 py-3 rounded-lg text-lg font-semibold hover:scale-105 transition duration-200"
