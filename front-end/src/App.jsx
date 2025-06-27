@@ -16,6 +16,7 @@ import Item from "./pages/Item"
 import Terms from "./pages/Terms"
 import PartnerTerms from "./pages/PartnerTerms"
 import Reciept from "./pages/Reciept"
+import Order from "./pages/Order"
 // import UserHeader from "./pages/UserHeader"
 import { BrowserRouter as Router,Routes,Route } from "react-router-dom";
 function App() {
@@ -42,6 +43,7 @@ function App() {
       <Route path="/Terms" element={<Terms/>}/>
       <Route path="/PartnerTerms" element={<PartnerTerms/>}/>
       <Route path="/Reciept" element={<Reciept/>}/>
+      <Route path="/Order" element={<Order/>}/>
       {/* <Route path="/UserHeader" element={<UserHeader/>}/> */}
      </Routes>
     {/* <Footer/> */}

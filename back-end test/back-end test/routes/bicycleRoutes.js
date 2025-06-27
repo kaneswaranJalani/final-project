@@ -1,23 +1,39 @@
 import express from 'express';
-import { 
-  addBicycle, 
-  getAllBicycles, 
-  updateBicycle, 
-  deleteBicycle 
-} from '../controllers/bicycleController.js';
+import Bicycle from '../models/bicycle.js';
 
 const router = express.Router();
 
-// ✅ Create bicycle for a user (userId in URL)
-router.post('/user/:userId', addBicycle);
+// GET all bicycles
+router.get('/', async (req, res) => {
+  try {
+    const bicycles = await Bicycle.find();
+    res.status(200).json(bicycles);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to fetch bicycles', error: err.message });
+  }
+});
 
-// ✅ Get all bicycles
-router.get('/', getAllBicycles);
+// POST create a new bicycle
+router.post('/', async (req, res) => {
+  try {
+    const { bicycleName, category, price, bikeId } = req.body;
 
-// ✅ Update bicycle by ID
-router.put('/:id', updateBicycle);
+    if (!bicycleName || !category || !price || !bikeId) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
 
-// ✅ Delete bicycle by ID
-router.delete('/:id', deleteBicycle);
+    const newBicycle = new Bicycle({
+      bicycleName,
+      category,
+      price,
+      bikeId,
+    });
+
+    const savedBicycle = await newBicycle.save();
+    res.status(201).json(savedBicycle);
+  } catch (err) {
+    res.status(500).json({ message: 'Failed to create bicycle', error: err.message });
+  }
+});
 
 export default router;

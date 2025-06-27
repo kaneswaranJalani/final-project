@@ -1,121 +1,51 @@
 import Order from '../models/order.js';
 import Bicycle from '../models/bicycle.js';
 
-export const createOrder = async (req, res, next) => {
+// Create a new order
+export const createOrder = async (req, res) => {
   try {
-    const { bicycleId, quantity, user, orderTime, returnTime } = req.body;
+    const { bicycleId, pickupLocation, startDate, endDate, quantity } = req.body;
 
-    // Check if bicycle exists
+    // Validate required fields
+    if (!bicycleId || !pickupLocation || !startDate || !endDate || !quantity) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Fetch bicycle details
     const bicycle = await Bicycle.findById(bicycleId);
     if (!bicycle) {
       return res.status(404).json({ message: 'Bicycle not found' });
     }
 
-    // Check stock
-    if (bicycle.stock < quantity) {
-      return res.status(400).json({ message: 'Insufficient stock' });
-    }
+    // Calculate total price
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const durationInHours = Math.max((end - start) / (1000 * 60 * 60), 1);
+    const totalPrice = bicycle.price * durationInHours * quantity;
 
-    // Validate rental period
-    const startDate = new Date(orderTime);
-    const endDate = new Date(returnTime);
-    const timeDiff = endDate.getTime() - startDate.getTime();
-
-    if (timeDiff <= 0) {
-      return res.status(400).json({ message: 'Invalid rental period' });
-    }
-
-    // Calculate rental hours
-    const rentalHours = Math.ceil(timeDiff / (1000 * 60 * 60)); // convert ms to hours
-
-    // Calculate total price (price per hour * quantity * hours)
-    const totalPrice = rentalHours * bicycle.price * quantity;
-
+    // Create order
     const order = new Order({
-      user,
       bicycle: bicycleId,
+      pickupLocation,
+      startDate,
+      endDate,
       quantity,
-      hours: rentalHours,
-      orderTime: startDate,
-      returnTime: endDate,
-      totalPrice
+      totalPrice,
     });
 
-    // Reduce stock
-    bicycle.stock -= quantity;
-    await bicycle.save();
-
-    const savedOrder = await order.save();
-    res.status(201).json(savedOrder);
+    await order.save();
+    res.status(201).json(order);
   } catch (err) {
-    console.error(err);
-    next(err);
+    res.status(500).json({ message: 'Failed to place order', error: err.message });
   }
 };
 
-export const getOrders = async (req, res, next) => {
+// Get all orders
+export const getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
-      .populate('user', 'name email')
-      .populate('bicycle', 'brand model price');
-    res.status(200).json(orders);
+    const orders = await Order.find().populate('bicycle');
+    res.json(orders);
   } catch (err) {
-    console.error(err);
-    next(err);
-  }
-};
-
-export const getOrderById = async (req, res, next) => {
-  try {
-    const order = await Order.findById(req.params.id)
-      .populate('user', 'name email')
-      .populate('bicycle', 'brand model price');
-
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    res.status(200).json(order);
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-};
-
-export const updateOrderStatus = async (req, res, next) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    order.status = req.body.status || order.status;
-    const updatedOrder = await order.save();
-    res.status(200).json(updatedOrder);
-  } catch (err) {
-    console.error(err);
-    next(err);
-  }
-};
-
-export const deleteOrder = async (req, res, next) => {
-  try {
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    // Restock bicycle
-    const bicycle = await Bicycle.findById(order.bicycle);
-    if (bicycle) {
-      bicycle.stock += order.quantity;
-      await bicycle.save();
-    }
-
-    await order.deleteOne();
-    res.json({ message: 'Order deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    next(err);
+    res.status(500).json({ message: 'Failed to fetch orders', error: err.message });
   }
 };

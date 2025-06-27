@@ -1,44 +1,41 @@
-// models/Order.js
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User is required']
-  },
   bicycle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Bicycle',
-    required: [true, 'Bicycle is required']
+    required: true
+  },
+  pickupLocation: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  startDate: {
+    type: Date,
+    required: true
+  },
+  endDate: {
+    type: Date,
+    required: true
   },
   quantity: {
     type: Number,
-    required: [true, 'Quantity is required'],
-    min: [1, 'At least one bicycle must be ordered']
-  },
-  orderTime: {
-    type: Date,
-    required: [true, 'Order time is required']
-  },
-  returnTime: {
-    type: Date,
-    required: [true, 'Return time is required']
-  },
-  hours: {
-    type: Number,
-    required: [true, 'Rental days are required']
+    required: true,
+    min: 1
   },
   totalPrice: {
     type: Number,
-    required: [true, 'Total price is required']
+    required: true,
+    min: 0
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'],
     default: 'pending'
   }
-}, { timestamps: true });
+}, {
+  timestamps: true
+});
 
-const Order = mongoose.model('Order', orderSchema);
-export default Order;
+export default mongoose.model('Order', orderSchema);
