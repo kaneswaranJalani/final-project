@@ -29,7 +29,8 @@ router.post('/register', async (req, res) => {
       secondaryPhone,
       address,
       idProof,
-      rentalPreferences
+      rentalPreferences,
+      role
     });
 
     await user.save();
@@ -39,5 +40,12 @@ router.post('/register', async (req, res) => {
     res.status(500).json({ message: 'Registration failed', error });
   }
 });
+
+router.put('/user/:id', async (req, res) => {
+  const { role } = req.body;
+  await User.findByIdAndUpdate(req.params.id, { role });
+  res.json({ message: 'Role updated' });
+});
+
 
 export default router;
