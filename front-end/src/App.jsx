@@ -9,7 +9,7 @@ import Feedback from "./pages/Feedback"
 // import Footer from "./components/Footer"
 import Payment from "./pages/Payment"
 import AdminDashboard from "./pages/AdminDashboard"
-import SuccessMessagePage from "./pages/SuccessMessagePage"
+// import SuccessMessagePage from "./pages/SuccessMessagePage"
 // import SelectItem from "./pages/SelectItem"
 import SuccessfulRegister from "./pages/SuccessfulRegister" 
 import Item from "./pages/Item"
@@ -18,6 +18,7 @@ import PartnerTerms from "./pages/PartnerTerms"
 import Reciept from "./pages/Reciept"
 import Order from "./pages/Order"
 // import UserHeader from "./pages/UserHeader"
+import PaymentSuccess from "./pages/PaymentSuccess"
 import { BrowserRouter as Router,Routes,Route } from "react-router-dom";
 function App() {
   
@@ -36,7 +37,7 @@ function App() {
       <Route path="/Feedback" element={<Feedback/>}/>
       <Route path="/Payment" element={<Payment/>}/>
       <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
-      <Route path="/SuccessMessagePage" element={<SuccessMessagePage/>}/>
+      {/* <Route path="/SuccessMessagePage" element={<SuccessMessagePage/>}/> */}
       {/* <Route path="/SelectItem" element={<SelectItem/>}/> */}
       <Route path="/SuccessfulRegister" element={<SuccessfulRegister/>}/>
       <Route path="/Item" element={<Item/>}/>
@@ -45,6 +46,7 @@ function App() {
       <Route path="/Reciept" element={<Reciept/>}/>
       <Route path="/Order" element={<Order/>}/>
       {/* <Route path="/UserHeader" element={<UserHeader/>}/> */}
+      <Route path="/PaymentSuccess" element={<PaymentSuccess/>}/>
      </Routes>
     {/* <Footer/> */}
      

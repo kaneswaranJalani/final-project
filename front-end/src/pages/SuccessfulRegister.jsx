@@ -1,46 +1,50 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
 
 const SuccessfulRegister = () => {
   const navigate = useNavigate();
 
-  const handleGoToDashboard = () => {
-    navigate('/dashboard'); // Replace with your dashboard route
+  const handleResendEmail = () => {
+    alert('📧 Confirmation email resent.');
   };
 
-  const handleResendEmail = () => {
-    alert(' Confirmation email resent.');
+  const handleClose = () => {
+    navigate('/Item'); // Change to '/intro' or '/landing' if needed
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-gray-100 px-6 py-12">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 border border-gray-200 animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] px-6 py-12 relative">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl max-w-md w-full p-10 border border-gray-200 animate-fade-in relative">
+        
+        {/* Close Button */}
+        <button
+          onClick={handleClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-[#67103d] transition"
+          aria-label="Close"
+        >
+          <XMarkIcon className="w-6 h-6" />
+        </button>
+
         <div className="flex flex-col items-center text-center">
-          <CheckCircleIcon className="w-20 h-20 text-green-500 mb-4" />
-          <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800">Registration Successful!</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Thank you for registering with us. Please verify your email to activate your account.
+          <CheckCircleIcon className="w-20 h-20 text-green-500 mb-4 animate-bounce" />
+          <h2 className="text-3xl font-extrabold text-[#67103d]">Registration Successful!</h2>
+          <p className="mt-3 text-sm text-gray-600">
+            Thank you for registering with us. <br />
+            Please verify your email to activate your account.
           </p>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500 mb-2">
+            Didn't receive the email?
+          </p>
           <button
-            onClick={handleGoToDashboard}
-            className="w-full bg-[#67103d] hover:bg-[#50052c] text-white text-sm font-semibold py-3 px-4 rounded-lg shadow transition duration-200"
+            onClick={handleResendEmail}
+            className="inline-block text-[#67103d] font-semibold hover:underline transition hover:text-[#50052c]"
           >
-            🚀 Go to Dashboard
+            Resend Confirmation Email
           </button>
-
-          <div className="mt-6 text-center text-sm text-gray-500">
-            Didn't receive the email?{' '}
-            <button
-              onClick={handleResendEmail}
-              className="text-[#67103d] hover:underline font-medium transition"
-            >
-              Resend Confirmation
-            </button>
-          </div>
         </div>
       </div>
     </div>

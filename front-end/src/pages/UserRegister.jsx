@@ -46,8 +46,7 @@ const UserRegister = () => {
     }
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/register", 
-        {
+      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
@@ -68,14 +67,14 @@ const UserRegister = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] flex items-center justify-center px-4 py-10">
       <form
-        className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-3xl border border-gray-100"
+        className="bg-white p-10 rounded-3xl shadow-lg w-full max-w-3xl border border-gray-200"
         onSubmit={handleSubmit}
       >
         <div className="text-center mb-8">
           <h2 className="text-3xl font-extrabold text-[#67103d]">User Registration</h2>
-          <p className="text-sm text-gray-500 mt-1">Start your ride today</p>
+          <p className="text-sm text-gray-600 mt-1">Start your ride today</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -88,7 +87,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="John"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -101,7 +100,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="Doe"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -114,7 +113,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="example@mail.com"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -127,7 +126,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -140,7 +139,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -153,7 +152,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="+94 77XXXXXXX"
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -164,8 +163,8 @@ const UserRegister = () => {
               name="secondaryPhone"
               value={form.secondaryPhone}
               onChange={handleChange}
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
               placeholder="Optional"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -177,7 +176,7 @@ const UserRegister = () => {
               onChange={handleChange}
               rows={3}
               placeholder="123 Main St, Colombo, Sri Lanka"
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
               required
             />
           </div>
@@ -191,7 +190,7 @@ const UserRegister = () => {
               onChange={handleChange}
               placeholder="NIC / Passport / License No."
               required
-              className="mt-1 w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+              className="mt-2 w-full p-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#67103d] bg-gray-50"
             />
           </div>
 
@@ -199,7 +198,7 @@ const UserRegister = () => {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Rental Preferences
             </label>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-5">
               {["Daily commute", "Leisure rides", "Fitness", "Touring/Adventure"].map((pref, i) => (
                 <label key={i} className="flex items-center space-x-2 text-sm text-gray-700">
                   <input
@@ -234,17 +233,17 @@ const UserRegister = () => {
           </div>
         </div>
 
-        <div className="flex justify-end gap-4 mt-8">
+        <div className="flex justify-end gap-4 mt-10">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="px-4 py-2 border border-gray-400 rounded-md text-gray-700 hover:border-[#67103d] hover:text-[#67103d] transition"
+            className="px-5 py-2 border border-gray-400 rounded-xl text-gray-700 font-medium hover:border-[#67103d] hover:text-[#67103d] transition duration-200"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-6 py-2 rounded-md bg-[#67103d] text-white hover:bg-[#50052c] transition font-semibold"
+            className="px-6 py-2 rounded-xl bg-[#67103d] text-white font-semibold hover:bg-[#50052c] transition duration-200"
           >
             Register
           </button>

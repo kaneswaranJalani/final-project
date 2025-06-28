@@ -1,40 +1,75 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { gsap } from "gsap";
 
-function Navbar() {
+function Navbar({ isAuthenticated, setIsAuthenticated }) {
   const [isOpen, setIsOpen] = useState(false);
+  const navbarRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+  const location = useLocation();
+
+  // GSAP animations
+  useEffect(() => {
+    gsap.fromTo(
+      navbarRef.current,
+      { opacity: 0, y: -30, scale: 0.98 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: "power3.out" }
+    );
+
+    if (isOpen) {
+      gsap.fromTo(
+        mobileMenuRef.current,
+        { opacity: 0, x: 100 },
+        { opacity: 1, x: 0, duration: 0.5, ease: "power3.out" }
+      );
+    }
+  }, [isOpen]);
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("userInfo"); // Clear user info from local storage
+  };
 
   return (
-    <nav className="bg-[#67103d] shadow-md sticky top-0 z-50">
+    <nav ref={navbarRef} className="bg-[#67103d] shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
+        <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-          <Link to="/" className="flex items-center">
-              
-              <span className="text-2xl font-bold text-white font-island-moments">
+            <Link to="/" className="flex items-center">
+              <span className="text-3xl font-bold text-white font-island-moments bg-clip-text bg-gradient-to-r from-white to-[#67103d]">
                 Rideloop
               </span>
             </Link>
           </div>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/item">Item</NavLink>
-            <Link 
-              to="/login"
-              className="bg-white text-[#67103d] hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-            >
-              Login
-            </Link>
+          <div className="hidden md:flex items-center space-x-8">
+            <NavLink to="/" current={location.pathname === "/"}>Home</NavLink>
+            <NavLink to="/item" current={location.pathname === "/item"}>Item</NavLink>
+            {isAuthenticated ? (
+              <Link
+                to="/"
+                onClick={handleLogout}
+                className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              >
+                Logout
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              >
+                Login
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-white focus:outline-none"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-gray-200 focus:outline-none transition-all duration-200"
             >
               <svg
                 className="h-6 w-6"
@@ -66,21 +101,34 @@ function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-[#7a1347] pb-3 px-2">
-          <div className="flex flex-col space-y-2">
-            <MobileNavLink to="/" onClick={() => setIsOpen(false)}>
+        <div ref={mobileMenuRef} className="md:hidden bg-[#4c092b] pb-6 px-4">
+          <div className="flex flex-col space-y-4 pt-4">
+            <MobileNavLink to="/" onClick={() => setIsOpen(false)} current={location.pathname === "/"}>
               Home
             </MobileNavLink>
-            <MobileNavLink to="/item" onClick={() => setIsOpen(false)}>
+            <MobileNavLink to="/item" onClick={() => setIsOpen(false)} current={location.pathname === "/item"}>
               Item
             </MobileNavLink>
-            <Link
-              to="/login"
-              onClick={() => setIsOpen(false)}
-              className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-2"
-            >
-              Login
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                to="/"
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
+              >
+                Logout
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                onClick={() => setIsOpen(false)}
+                className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       )}
@@ -89,21 +137,25 @@ function Navbar() {
 }
 
 // Reusable NavLink component for desktop
-const NavLink = ({ to, children }) => (
+const NavLink = ({ to, children, current }) => (
   <Link
     to={to}
-    className="text-white hover:bg-[#7a1347] px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+    className={`${
+      current ? "bg-white text-[#67103d]" : "text-white hover:bg-[#4c092b]"
+    } px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300`}
   >
     {children}
   </Link>
 );
 
 // Reusable NavLink component for mobile
-const MobileNavLink = ({ to, children, onClick }) => (
+const MobileNavLink = ({ to, children, onClick, current }) => (
   <Link
     to={to}
     onClick={onClick}
-    className="text-white hover:bg-[#8a1a54] px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 mx-1"
+    className={`${
+      current ? "bg-white text-[#67103d]" : "text-white hover:bg-[#4c092b]"
+    } px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 mx-4`}
   >
     {children}
   </Link>

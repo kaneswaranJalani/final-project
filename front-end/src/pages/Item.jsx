@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FiSearch, FiUser, FiSmile, FiShoppingCart } from "react-icons/fi";
+import { FiSearch, FiUser , FiSmile, FiShoppingCart } from "react-icons/fi";
 
 import bike1 from "../assets/bike1.jpg";
 import bike2 from "../assets/bike2.jpg";
@@ -21,8 +21,8 @@ const bikes = [
 
 const categories = [
   { label: "All", icon: <FiSearch /> },
-  { label: "Man", icon: <FiUser /> },
-  { label: "Female", icon: <FiUser /> },
+  { label: "Man", icon: <FiUser  /> },
+  { label: "Female", icon: <FiUser  /> },
   { label: "Child", icon: <FiSmile /> }
 ];
 
@@ -73,7 +73,7 @@ const Item = () => {
   };
 
   return (
-    <div className="px-6 py-10 bg-gray-50 min-h-screen">
+    <div className="px-6 py-10 bg-gray-50 min-h-screen transition-all duration-300">
       {/* Search & Filter */}
       <div className="text-center space-y-4 mb-8">
         <div className="relative w-full max-w-md mx-auto">
@@ -83,7 +83,7 @@ const Item = () => {
             placeholder="Trending Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-10 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d]"
+            className="w-full px-10 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d] transition duration-300"
           />
         </div>
 
@@ -95,10 +95,10 @@ const Item = () => {
                 setSelectedCategory(cat.label);
                 setSelectedBike(null);
               }}
-              className={`flex items-center gap-2 px-4 py-1 rounded-full text-sm transition ${
+              className={`flex items-center gap-2 px-4 py-1 rounded-full text-sm transition-all duration-300 ${
                 selectedCategory === cat.label
                   ? "bg-[#67103d] text-white"
-                  : "bg-gray-200 text-gray-700"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >
               {cat.icon}
@@ -114,12 +114,12 @@ const Item = () => {
           {filteredBikes.map((bike) => (
             <div
               key={bike.id}
-              className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden p-4 text-center"
+              className="bg-white rounded-xl shadow hover:shadow-lg transition-all duration-300 overflow-hidden p-4 text-center transform hover:scale-105"
             >
               <img
                 src={bike.image}
                 alt={bike.name}
-                className="w-48 h-32 object-cover mx-auto rounded"
+                className="w-48 h-32 object-cover mx-auto rounded transition-transform duration-300 transform hover:scale-110"
               />
               <h3 className="text-lg font-semibold text-gray-800 mt-3">{bike.name}</h3>
               <p className="text-sm text-gray-500">Rs. {bike.price}</p>
@@ -128,7 +128,7 @@ const Item = () => {
                   setSelectedBike(bike);
                   setSelectedColor("");
                 }}
-                className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2 mx-auto"
+                className="mt-2 bg-[#67103d] text-white px-6 py-1 rounded-md text-sm hover:bg-[#4e0e2e] flex items-center justify-center gap-2 mx-auto transition duration-300"
               >
                 <FiShoppingCart />
                 Rent
@@ -137,7 +137,7 @@ const Item = () => {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl p-6 shadow max-w-lg mx-auto text-center">
+        <div className="bg-white rounded-2xl p-6 shadow max-w-lg mx-auto text-center transition-all duration-300">
           <img
             src={selectedBike.image}
             alt={selectedBike.name}
@@ -153,10 +153,10 @@ const Item = () => {
                 <button
                   key={color}
                   onClick={() => handleColorSelect(color)}
-                  className={`px-4 py-1 rounded-full text-sm font-medium border ${
+                  className={`px-4 py-1 rounded-full text-sm font-medium border transition-all duration-300 ${
                     selectedColor === color
                       ? "bg-[#67103d] text-white border-[#67103d]"
-                      : "bg-white text-gray-800 border-gray-300"
+                      : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                   }`}
                 >
                   {color}
@@ -167,7 +167,7 @@ const Item = () => {
 
           <button
             onClick={handlePay}
-            className="bg-[#67103d] text-white px-6 py-2 rounded-full hover:bg-[#500c2e] transition"
+            className="bg-[#67103d] text-white px-6 py-2 rounded-full hover:bg-[#500c2e] transition duration-300"
           >
             💳 Proceed to Pay
           </button>

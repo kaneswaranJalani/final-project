@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from "react-router-dom";
-import axios from 'axios'; // ✅ ADD THIS
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 
-// Reusable input field
 const InputField = ({ label, type = "text", name, value, onChange, required = false }) => (
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
@@ -13,7 +11,7 @@ const InputField = ({ label, type = "text", name, value, onChange, required = fa
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
+      className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
     />
   </div>
 );
@@ -77,7 +75,7 @@ const PartnerRegister = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/partner/register", formData);
       alert("Partner registered successfully!");
-      navigate("/SuccessfulRegister"); // ✅ your success page
+      navigate("/SuccessfulRegister");
     } catch (error) {
       const errorMsg = error?.response?.data?.message || "Registration failed!";
       alert(errorMsg);
@@ -86,12 +84,12 @@ const PartnerRegister = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-8 bg-white rounded-3xl shadow-2xl border border-gray-100 mt-10">
+    <div className="max-w-5xl mx-auto p-8 mt-10 bg-white rounded-3xl shadow-xl border border-gray-100">
       <h1 className="text-3xl font-extrabold text-[#67103d] mb-2">Partner Registration</h1>
       <p className="text-gray-600 mb-8">Register to rent out your bicycles and manage bookings easily.</p>
 
       <form onSubmit={handleSubmit}>
-        {/* Personal Information */}
+        {/* Section: Personal Information */}
         <div className="mb-10">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">👤 Personal Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -106,7 +104,7 @@ const PartnerRegister = () => {
           </div>
         </div>
 
-        {/* Business Information */}
+        {/* Section: Business Details */}
         <div className="mb-10 border-t pt-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">🏢 Business Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -120,14 +118,14 @@ const PartnerRegister = () => {
                 value={formData.additionalDetails}
                 onChange={handleChange}
                 rows="4"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
                 placeholder="Share any extra details about your business or vehicles"
               />
             </div>
           </div>
         </div>
 
-        {/* Service Area */}
+        {/* Section: Service Area */}
         <div className="mb-10 border-t pt-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">📍 Service Area</h2>
           <label className="block text-sm font-medium text-gray-700 mb-1">Coverage Area</label>
@@ -136,12 +134,12 @@ const PartnerRegister = () => {
             name="serviceArea"
             value={formData.serviceArea}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#67103d] transition"
             placeholder="City, town, or region"
           />
         </div>
 
-        {/* Rental Preferences */}
+        {/* Section: Rental Preferences */}
         <div className="mb-10 border-t pt-8">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">🚲 Rental Preferences</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -161,7 +159,7 @@ const PartnerRegister = () => {
           </div>
         </div>
 
-        {/* Terms and Conditions */}
+        {/* Section: Terms */}
         <div className="mb-8">
           <label className="flex items-center space-x-2 text-sm text-gray-700">
             <input
@@ -191,7 +189,7 @@ const PartnerRegister = () => {
           </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-[#67103d] text-white font-semibold rounded-lg shadow-md hover:bg-[#55072f] focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:ring-offset-2 transition"
+            className="px-6 py-2 bg-[#67103d] text-white font-semibold rounded-lg shadow-md hover:bg-[#50052c] focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:ring-offset-2 transition"
           >
             Register
           </button>
