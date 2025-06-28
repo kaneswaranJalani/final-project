@@ -33,6 +33,7 @@ const Order = () => {
       const end = new Date(endDate);
       const hours = Math.max((end - start) / (1000 * 60 * 60), 1);
       const price = selectedBike.price * hours * quantity;
+
       setTotalPrice(price.toFixed(2));
       setMessage('');
     } else {
@@ -41,17 +42,19 @@ const Order = () => {
   }, [formData, bicycles]);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: name === 'quantity' ? Math.max(1, Number(value)) : value
     }));
   };
 
   const handlePayment = () => {
     if (totalPrice > 0) {
-      alert(`Proceeding to payment for $${totalPrice}`);
+      alert(`✅ Proceeding to payment for $${totalPrice}`);
+      // Navigate to payment page or call payment API
     } else {
-      alert('Please fill in all fields to calculate total price.');
+      alert('❗ Please complete the form correctly.');
     }
   };
 
@@ -69,6 +72,7 @@ const Order = () => {
       )}
 
       <form className="space-y-5" onSubmit={e => e.preventDefault()}>
+        {/* Bicycle Selection */}
         <div>
           <label className="block font-medium text-[#67103d] mb-1">Select Bicycle</label>
           <select
@@ -87,6 +91,7 @@ const Order = () => {
           </select>
         </div>
 
+        {/* Location */}
         <div>
           <label className="block font-medium text-[#67103d] mb-1">Pickup Location (Sri Lanka)</label>
           <select
@@ -103,6 +108,7 @@ const Order = () => {
           </select>
         </div>
 
+        {/* Dates */}
         <div>
           <label className="block font-medium text-[#67103d] mb-1">Start Date & Time</label>
           <input
@@ -114,7 +120,6 @@ const Order = () => {
             className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:ring-2 focus:ring-[#67103d]"
           />
         </div>
-
         <div>
           <label className="block font-medium text-[#67103d] mb-1">End Date & Time</label>
           <input
@@ -127,6 +132,7 @@ const Order = () => {
           />
         </div>
 
+        {/* Quantity */}
         <div>
           <label className="block font-medium text-[#67103d] mb-1">Quantity</label>
           <input
@@ -140,20 +146,21 @@ const Order = () => {
           />
         </div>
 
+        {/* Price */}
         <div className="text-lg font-semibold text-[#67103d] text-center">
           Total Price: ${totalPrice}
         </div>
 
+        {/* Button */}
         <div className="text-center">
-          {totalPrice > 0 && (
-            <button
-              type="button"
-              onClick={handlePayment}
-              className="bg-[#67103d] hover:bg-[#500c2e] text-white font-semibold px-6 py-2 rounded-full transition duration-200"
-            >
-              💳 Proceed to Pay
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={handlePayment}
+            disabled={totalPrice <= 0}
+            className="bg-[#67103d] hover:bg-[#500c2e] text-white font-semibold px-6 py-2 rounded-full transition duration-200 disabled:opacity-50"
+          >
+            💳 Proceed to Pay
+          </button>
         </div>
       </form>
     </div>

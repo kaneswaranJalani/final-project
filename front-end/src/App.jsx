@@ -10,7 +10,7 @@ import Feedback from "./pages/Feedback"
 import Payment from "./pages/Payment"
 import AdminDashboard from "./pages/AdminDashboard"
 import SuccessMessagePage from "./pages/SuccessMessagePage"
-import SelectItem from "./pages/SelectItem"
+// import SelectItem from "./pages/SelectItem"
 import SuccessfulRegister from "./pages/SuccessfulRegister" 
 import Item from "./pages/Item"
 import Terms from "./pages/Terms"
@@ -37,7 +37,7 @@ function App() {
       <Route path="/Payment" element={<Payment/>}/>
       <Route path="/AdminDashboard" element={<AdminDashboard/>}/>
       <Route path="/SuccessMessagePage" element={<SuccessMessagePage/>}/>
-      <Route path="/SelectItem" element={<SelectItem/>}/>
+      {/* <Route path="/SelectItem" element={<SelectItem/>}/> */}
       <Route path="/SuccessfulRegister" element={<SuccessfulRegister/>}/>
       <Route path="/Item" element={<Item/>}/>
       <Route path="/Terms" element={<Terms/>}/>

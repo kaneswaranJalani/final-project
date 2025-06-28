@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingCart,
   FiBell, FiSearch, FiMenu,
-  FiUser, FiDollarSign, FiTrendingUp, FiShoppingBag
+  FiUser, FiDollarSign, FiShoppingBag
 } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -11,11 +11,13 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'orders') fetchOrders();
+    if (activeTab === 'payment') fetchPayments();
   }, [activeTab]);
 
   const fetchUsers = async () => {
@@ -30,7 +32,7 @@ const AdminDashboard = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/orders');
+      const res = await axios.get('http://localhost:5000/api/bike/all');
       setOrders(res.data);
       setError(null);
     } catch (err) {
@@ -38,65 +40,65 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  const fetchPayments = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/user/${id}`);
-      setUsers(users.filter((user) => user._id !== id));
+      const res = await axios.get('http://localhost:5000/api/payments/all');
+      setPayments(res.data);
+      setError(null);
     } catch (err) {
-      setError('Failed to delete user');
+      setError('Failed to load payments');
     }
-  };
-
-  const handleUpdate = (id) => {
-    alert(`Update functionality for user ${id} is not implemented yet.`);
-  };
-
-  const handleDeleteOrder = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this order?")) return;
-    try {
-      await axios.delete(`http://localhost:5000/api/orders/${id}`);
-      setOrders(orders.filter((order) => order._id !== id));
-    } catch (err) {
-      setError('Failed to delete order');
-    }
-  };
-
-  const handleUpdateOrder = (id) => {
-    alert(`Update functionality for order ${id} is not implemented yet.`);
   };
 
   const handleRoleChange = async (userId, newRole) => {
     try {
       await axios.put(`http://localhost:5000/api/user/${userId}`, { role: newRole });
-      setUsers(users.map((user) =>
-        user._id === userId ? { ...user, role: newRole } : user
-      ));
+      setUsers(users.map(user => user._id === userId ? { ...user, role: newRole } : user));
     } catch (err) {
       alert("Failed to update role");
     }
   };
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/bike/status/${orderId}`, { status: newStatus });
+      setOrders(orders.map(order => order._id === orderId ? { ...order, status: newStatus } : order));
+    } catch (err) {
+      alert("Failed to update status");
+    }
+  };
+
+  const handlePaymentStatusChange = async (paymentId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/payments/status/${paymentId}`, { status: newStatus });
+      setPayments(payments.map(payment => payment._id === paymentId ? { ...payment, status: newStatus } : payment));
+    } catch (err) {
+      alert("Failed to update payment status");
+    }
+  };
+
+  const totalRevenue = payments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
+
   const stats = [
-    { title: 'Total Users', value: users.length.toString(), change: '+12%', trend: 'up', icon: <FiUser size={24} /> },
-    { title: 'Total Orders', value: orders.length.toString(), change: '+5%', trend: 'up', icon: <FiShoppingBag size={24} /> },
-    { title: 'Revenue', value: '$34,245', change: '-2%', trend: 'down', icon: <FiDollarSign size={24} /> }
-    // { title: 'Conversion', value: '3.6%', change: '+1.2%', trend: 'up', icon: <FiTrendingUp size={24} /> }
+    { title: 'Total Users', value: users.length.toString(), icon: <FiUser size={24} /> },
+    { title: 'Total Orders', value: orders.length.toString(), icon: <FiShoppingBag size={24} /> },
+    { title: 'Revenue', value: `Rs. ${totalRevenue}`, icon: <FiDollarSign size={24} /> }
   ];
 
   const menuItems = [
     { icon: <FiHome />, name: 'Dashboard', key: 'dashboard' },
     { icon: <FiUsers />, name: 'Users', key: 'users' },
     { icon: <FiShoppingCart />, name: 'Orders', key: 'orders' },
-    { icon: <FiPieChart />, name: 'Analytics', key: 'analytics' },
+    { icon: <FiPieChart />, name: 'Payment', key: 'payment' },
     { icon: <FiSettings />, name: 'Settings', key: 'settings' }
   ];
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className={`${sidebarOpen ? 'w-64' : 'w-20'} bg-white transition-all duration-300`}>
-        <div className="p-4 flex items-center justify-between">
-          {sidebarOpen && <h1 className="text-xl font-bold">AdminPanel</h1>}
+    <div className="flex h-screen font-sans bg-gradient-to-br from-slate-100 to-white">
+      {/* Sidebar */}
+      <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 bg-white shadow-md`}>
+        <div className="p-4 flex items-center justify-between border-b">
+          {sidebarOpen && <h1 className="text-2xl font-bold text-[#67103d]">Admin</h1>}
           <button onClick={() => setSidebarOpen(!sidebarOpen)}><FiMenu /></button>
         </div>
         <nav className="mt-8">
@@ -104,41 +106,48 @@ const AdminDashboard = () => {
             <button
               key={item.key}
               onClick={() => setActiveTab(item.key)}
-              className={`flex items-center w-full p-4 ${activeTab === item.key ? 'bg-indigo-100' : 'hover:bg-indigo-100'}`}
+              className={`flex items-center w-full p-4 text-gray-700 hover:bg-[#f3f0f4] transition ${
+                activeTab === item.key ? 'bg-[#e5e1e7] font-semibold' : ''
+              }`}
             >
               <span>{item.icon}</span>
               {sidebarOpen && <span className="ml-3">{item.name}</span>}
             </button>
           ))}
         </nav>
-      </div>
+      </aside>
 
-      <div className="flex-1 overflow-auto">
-        <header className="bg-white shadow p-4 flex justify-between">
-          <h2 className="text-xl font-semibold capitalize">{activeTab}</h2>
-          <div className="flex items-center space-x-4">
+      {/* Content */}
+      <main className="flex-1 overflow-auto">
+        {/* Header */}
+        <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
+          <h2 className="text-2xl font-semibold text-[#67103d] capitalize">{activeTab}</h2>
+          <div className="flex items-center gap-4">
             <div className="relative">
-              <FiSearch className="absolute left-3 top-2 text-gray-400" />
-              <input type="text" placeholder="Search..." className="pl-10 pr-4 py-2 border rounded-lg" />
+              <FiSearch className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="pl-10 pr-4 py-2 border rounded-lg bg-gray-50"
+              />
             </div>
-            <FiBell className="text-gray-600" />
+            <FiBell className="text-gray-500" />
           </div>
         </header>
 
-        <main className="p-6">
+        <section className="p-6">
           {/* Dashboard */}
           {activeTab === 'dashboard' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {stats.map((stat, i) => (
-                <div key={i} className="bg-white p-6 rounded-xl shadow">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-indigo-600">{stat.icon}</div>
+                <div key={i} className="backdrop-blur-lg bg-white/60 p-6 rounded-xl shadow-lg border">
+                  <div className="flex items-center gap-3">
+                    <div className="text-[#67103d]">{stat.icon}</div>
                     <div>
                       <p className="text-sm text-gray-500">{stat.title}</p>
-                      <h3 className="text-2xl font-bold">{stat.value}</h3>
+                      <h3 className="text-2xl font-bold text-gray-800">{stat.value}</h3>
                     </div>
                   </div>
-                  <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>{stat.change}</span>
                 </div>
               ))}
             </div>
@@ -146,40 +155,26 @@ const AdminDashboard = () => {
 
           {/* Users */}
           {activeTab === 'users' && (
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h2 className="text-xl font-semibold mb-4">User List</h2>
+            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
+              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">User List</h2>
               {error ? <p className="text-red-600">{error}</p> : (
-                <ul>
+                <ul className="space-y-4">
                   {users.map((user, i) => (
-                    <li key={i} className="mb-2 p-4 border rounded flex justify-between items-center">
+                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
                       <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-gray-500">{user.email}</p>
-                        <p className="text-sm text-gray-400">Role: {user.role}</p>
+                        <p className="font-medium text-[#333]">{user.name}</p>
+                        <p className="text-sm text-gray-600">{user.email}</p>
+                        <p className="text-sm text-gray-500">Role: {user.role}</p>
                       </div>
-                      <div className="flex space-x-2 items-center">
-                        <select
-                          value={user.role}
-                          onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                          className="border px-2 py-1 rounded text-sm"
-                        >
-                          <option value="user">User</option>
-                          <option value="partner">Partner</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                        <button
-                          onClick={() => handleUpdate(user._id)}
-                          className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-                        >
-                          Update
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user._id)}
-                          className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                        className="border px-2 py-1 rounded text-sm"
+                      >
+                        <option value="user">User</option>
+                        <option value="partner">Partner</option>
+                        <option value="admin">Admin</option>
+                      </select>
                     </li>
                   ))}
                 </ul>
@@ -189,39 +184,63 @@ const AdminDashboard = () => {
 
           {/* Orders */}
           {activeTab === 'orders' && (
-            <div className="bg-white p-6 rounded-xl shadow">
-              <h2 className="text-xl font-semibold mb-4">Order List</h2>
+            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
+              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Order List</h2>
               {error ? <p className="text-red-600">{error}</p> : (
-                <ul>
+                <ul className="space-y-4">
                   {orders.map((order, i) => (
-                    <li key={i} className="mb-2 p-4 border rounded flex justify-between items-center">
+                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
                       <div>
-                        <p className="font-medium">#{order._id}</p>
-                        <p className="text-sm text-gray-500">{order.customerName} - ${order.amount}</p>
-                        <p className="text-sm text-gray-500">Status: {order.status}</p>
+                        <p className="font-semibold text-[#67103d]">{order.name}</p>
+                        <p className="text-sm text-gray-600">Color: {order.color}</p>
+                        <p className="text-sm text-gray-600">Price: Rs. {order.price}</p>
                       </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleUpdateOrder(order._id)}
-                          className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-                        >
-                          Update
-                        </button>
-                        <button
-                          onClick={() => handleDeleteOrder(order._id)}
-                          className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      <select
+                        value={order.status || 'Pending'}
+                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        className="border px-3 py-1 rounded text-sm bg-white"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
                     </li>
                   ))}
                 </ul>
               )}
             </div>
           )}
-        </main>
-      </div>
+
+          {/* Payments */}
+          {activeTab === 'payment' && (
+            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
+              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Payment List</h2>
+              {error ? <p className="text-red-600">{error}</p> : (
+                <ul className="space-y-4">
+                  {payments.map((payment, i) => (
+                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
+                      <div>
+                        <p className="font-semibold text-[#67103d]">{payment.bikeName}</p>
+                        <p className="text-sm text-gray-600">Amount: Rs. {payment.amount}</p>
+                        <p className="text-sm text-gray-600">Color: {payment.color}</p>
+                      </div>
+                      <select
+                        value={payment.status || 'Paid'}
+                        onChange={(e) => handlePaymentStatusChange(payment._id, e.target.value)}
+                        className="border px-3 py-1 rounded text-sm bg-white"
+                      >
+                        <option value="Paid">Paid</option>
+                        <option value="Failed">Failed</option>
+                        <option value="Refunded">Refunded</option>
+                      </select>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 };
