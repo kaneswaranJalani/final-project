@@ -55,17 +55,17 @@ const Login = ({ setIsAuthenticated }) => {
       return;
     }
 
-    // Simulate login logic (no backend)
+    // Simulated login logic (can be replaced with real API call)
     setTimeout(() => {
-      setIsAuthenticated(true);
-
       const user = {
         email,
         role: email === "admin@gmail.com" ? "admin" : "user",
       };
 
       localStorage.setItem("user", JSON.stringify(user));
+      setIsAuthenticated(true);
 
+      // Navigate based on role
       if (user.role === "admin") {
         navigate("/AdminDashboard");
       } else {
@@ -98,7 +98,9 @@ const Login = ({ setIsAuthenticated }) => {
 
           <form ref={formRef} className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">Email Address</label>
+              <label htmlFor="email" className="block text-sm font-semibold text-gray-800">
+                Email Address
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FaEnvelope className="h-5 w-5 text-gray-400" />
@@ -116,7 +118,9 @@ const Login = ({ setIsAuthenticated }) => {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">Password</label>
+              <label htmlFor="password" className="block text-sm font-semibold text-gray-800">
+                Password
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <FaLock className="h-5 w-5 text-gray-400" />
@@ -137,7 +141,7 @@ const Login = ({ setIsAuthenticated }) => {
               type="submit"
               disabled={isLoading}
               className={`w-full flex justify-center items-center py-3.5 px-6 rounded-xl text-white font-semibold bg-gradient-to-r from-[#67103d] to-[#4c092b] transition-all duration-300 ${
-                isLoading ? 'opacity-75' : 'hover:scale-105'
+                isLoading ? "opacity-75" : "hover:scale-105"
               }`}
             >
               {isLoading ? "Signing in..." : <>Sign In <FaArrowRight className="ml-2" /></>}
@@ -149,9 +153,7 @@ const Login = ({ setIsAuthenticated }) => {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-600 font-medium">
-                Or continue with
-              </span>
+              <span className="px-3 bg-white text-gray-600 font-medium">Or continue with</span>
             </div>
           </div>
 
