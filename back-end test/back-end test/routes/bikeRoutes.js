@@ -20,7 +20,7 @@ router.post("/add", async (req, res) => {
   try {
     const { name, price, color, category, status } = req.body;
 
-    if (!name || !price || !color ) {
+    if (!name || !price || !color) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -28,7 +28,7 @@ router.post("/add", async (req, res) => {
       name,
       price,
       color,
-    //   category,
+      // category,
       status: status || "Pending",
     });
 
@@ -67,6 +67,27 @@ router.put("/status/:id", async (req, res) => {
   } catch (error) {
     console.error("PUT /status/:id error:", error);
     res.status(500).json({ message: "Failed to update status", error: error.message });
+  }
+});
+
+// ✅ Delete a bike/order
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: "Invalid bike ID" });
+    }
+
+    const deleted = await Bike.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Bike not found" });
+    }
+
+    res.json({ message: "Bike deleted successfully" });
+  } catch (error) {
+    console.error("DELETE /:id error:", error);
+    res.status(500).json({ message: "Failed to delete bike", error: error.message });
   }
 });
 

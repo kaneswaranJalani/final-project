@@ -28,10 +28,27 @@ router.get("/all", async (req, res) => {
 // Update payment status
 router.put("/status/:id", async (req, res) => {
   try {
-    const updated = await Payment.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
+    const updated = await Payment.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true }
+    );
     res.json(updated);
   } catch {
     res.status(500).json({ message: "Failed to update payment status" });
+  }
+});
+
+// ✅ Delete a payment
+router.delete("/:id", async (req, res) => {
+  try {
+    const deleted = await Payment.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+    res.json({ message: "Payment deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete payment" });
   }
 });
 

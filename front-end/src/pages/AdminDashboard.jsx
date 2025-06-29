@@ -86,6 +86,33 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/user/${userId}`);
+      setUsers(prev => prev.filter(u => u._id !== userId));
+    } catch (err) {
+      alert("❌ Failed to delete user");
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/bike/${orderId}`);
+      setOrders(prev => prev.filter(o => o._id !== orderId));
+    } catch (err) {
+      alert("❌ Failed to delete order");
+    }
+  };
+
+  const handleDeletePayment = async (paymentId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/payments/${paymentId}`);
+      setPayments(prev => prev.filter(p => p._id !== paymentId));
+    } catch (err) {
+      alert("❌ Failed to delete payment");
+    }
+  };
+
   const totalRevenue = payments.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
 
   const stats = [
@@ -128,7 +155,6 @@ const AdminDashboard = () => {
 
       {/* Content */}
       <main className="flex-1 overflow-auto">
-        {/* Header */}
         <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-[#67103d] capitalize">{activeTab}</h2>
           <div className="flex items-center gap-4">
@@ -175,15 +201,23 @@ const AdminDashboard = () => {
                         <p className="text-sm text-gray-600">{user.email}</p>
                         <p className="text-sm text-gray-500">Role: {user.role}</p>
                       </div>
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                        className="border px-2 py-1 rounded text-sm"
-                      >
-                        <option value="user">User</option>
-                        <option value="partner">Partner</option>
-                        <option value="admin">Admin</option>
-                      </select>
+                      <div className="flex gap-2 items-center">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                          className="border px-2 py-1 rounded text-sm"
+                        >
+                          <option value="user">User</option>
+                          <option value="partner">Partner</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -204,15 +238,23 @@ const AdminDashboard = () => {
                         <p className="text-sm text-gray-600">Color: {order.color}</p>
                         <p className="text-sm text-gray-600">Price: Rs. {order.price}</p>
                       </div>
-                      <select
-                        value={order.status || 'Pending'}
-                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                        className="border px-3 py-1 rounded text-sm bg-white"
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex gap-2 items-center">
+                        <select
+                          value={order.status || 'Pending'}
+                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                          className="border px-3 py-1 rounded text-sm bg-white"
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <button
+                          onClick={() => handleDeleteOrder(order._id)}
+                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -233,15 +275,23 @@ const AdminDashboard = () => {
                         <p className="text-sm text-gray-600">Amount: Rs. {payment.amount}</p>
                         <p className="text-sm text-gray-600">Color: {payment.color}</p>
                       </div>
-                      <select
-                        value={payment.status || 'Paid'}
-                        onChange={(e) => handlePaymentStatusChange(payment._id, e.target.value)}
-                        className="border px-3 py-1 rounded text-sm bg-white"
-                      >
-                        <option value="Paid">Paid</option>
-                        <option value="Failed">Failed</option>
-                        <option value="Refunded">Refunded</option>
-                      </select>
+                      <div className="flex gap-2 items-center">
+                        <select
+                          value={payment.status || 'Paid'}
+                          onChange={(e) => handlePaymentStatusChange(payment._id, e.target.value)}
+                          className="border px-3 py-1 rounded text-sm bg-white"
+                        >
+                          <option value="Paid">Paid</option>
+                          <option value="Failed">Failed</option>
+                          <option value="Refunded">Refunded</option>
+                        </select>
+                        <button
+                          onClick={() => handleDeletePayment(payment._id)}
+                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
