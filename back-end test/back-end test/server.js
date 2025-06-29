@@ -10,8 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-import orderRoutes from './routes/orderRoutes.js';
-import bicycleRoutes from './routes/bicycleRoutes.js';
+// import bicycleRoutes from './routes/bicycleRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';  // Correct import
 import trackingRoutes from './routes/trackingRoutes.js'; // Optional, if you want to track events
@@ -28,14 +27,15 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.json());
+
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/bicycles', bicycleRoutes);  // Better to use /api/bicycles for consistency
+// app.use('/api/bicycles', bicycleRoutes);  // Better to use /api/bicycles for consistency
 app.use('/api/payments', paymentRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tracking', trackingRoutes); // Optional, if you want to track events

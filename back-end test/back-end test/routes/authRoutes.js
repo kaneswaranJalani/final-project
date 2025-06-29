@@ -4,26 +4,23 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Register route
+// Register
 router.post('/register', async (req, res) => {
-  const {
-    firstName, lastName, email, password,
-    primaryPhone, secondaryPhone, address,
-    idProof, rentalPreferences
-  } = req.body;
-
   try {
-    // Check if user already exists
+    const {
+      firstName, lastName, email, password,
+      primaryPhone, secondaryPhone, address,
+      idProof, rentalPreferences
+    } = req.body;
+
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({ message: 'Email already registered' });
+      return res.status(400).json({ message: 'Email already exists' });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create and save the user
-    const newUser = new User({
+    const user = new User({
       firstName,
       lastName,
       email,
@@ -32,16 +29,23 @@ router.post('/register', async (req, res) => {
       secondaryPhone,
       address,
       idProof,
-      rentalPreferences
+      rentalPreferences,
+      role
     });
 
-    await newUser.save();
-    res.status(201).json({ message: 'User registered successfully', user: newUser });
+    await user.save();
+    res.status(201).json({ message: 'User registered successfully' });
 
-  } catch (err) {
-    console.error('Registration Error:', err);
-    res.status(500).json({ message: 'Server error during registration' });
+  } catch (error) {
+    res.status(500).json({ message: 'Registration failed', error });
   }
 });
+
+router.put('/user/:id', async (req, res) => {
+  const { role } = req.body;
+  await User.findByIdAndUpdate(req.params.id, { role });
+  res.json({ message: 'Role updated' });
+});
+
 
 export default router;

@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingCart,
-  FiBell, FiSearch, FiMenu,
-  FiUser, FiDollarSign, FiShoppingBag
+  FiBell, FiSearch, FiMenu, FiUser, FiDollarSign, FiShoppingBag
 } from 'react-icons/fi';
 
 const AdminDashboard = () => {
@@ -13,6 +12,7 @@ const AdminDashboard = () => {
   const [orders, setOrders] = useState([]);
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'users') fetchUsers();
@@ -21,59 +21,68 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:5000/api/user');
       setUsers(res.data);
       setError(null);
     } catch (err) {
       setError('Failed to load users');
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:5000/api/bike/all');
       setOrders(res.data);
       setError(null);
     } catch (err) {
       setError('Failed to load orders');
+    } finally {
+      setLoading(false);
     }
   };
 
   const fetchPayments = async () => {
+    setLoading(true);
     try {
       const res = await axios.get('http://localhost:5000/api/payments/all');
       setPayments(res.data);
       setError(null);
     } catch (err) {
       setError('Failed to load payments');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRoleChange = async (userId, newRole) => {
     try {
       await axios.put(`http://localhost:5000/api/user/${userId}`, { role: newRole });
-      setUsers(users.map(user => user._id === userId ? { ...user, role: newRole } : user));
+      setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
     } catch (err) {
-      alert("Failed to update role");
+      alert("❌ Failed to update role");
     }
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       await axios.put(`http://localhost:5000/api/bike/status/${orderId}`, { status: newStatus });
-      setOrders(orders.map(order => order._id === orderId ? { ...order, status: newStatus } : order));
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
     } catch (err) {
-      alert("Failed to update status");
+      alert("❌ Failed to update order status");
     }
   };
 
   const handlePaymentStatusChange = async (paymentId, newStatus) => {
     try {
       await axios.put(`http://localhost:5000/api/payments/status/${paymentId}`, { status: newStatus });
-      setPayments(payments.map(payment => payment._id === paymentId ? { ...payment, status: newStatus } : payment));
+      setPayments(prev => prev.map(p => p._id === paymentId ? { ...p, status: newStatus } : p));
     } catch (err) {
-      alert("Failed to update payment status");
+      alert("❌ Failed to update payment status");
     }
   };
 
@@ -157,7 +166,7 @@ const AdminDashboard = () => {
           {activeTab === 'users' && (
             <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
               <h2 className="text-xl font-semibold mb-4 text-[#67103d]">User List</h2>
-              {error ? <p className="text-red-600">{error}</p> : (
+              {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
                 <ul className="space-y-4">
                   {users.map((user, i) => (
                     <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
@@ -186,7 +195,7 @@ const AdminDashboard = () => {
           {activeTab === 'orders' && (
             <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
               <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Order List</h2>
-              {error ? <p className="text-red-600">{error}</p> : (
+              {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
                 <ul className="space-y-4">
                   {orders.map((order, i) => (
                     <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
@@ -215,7 +224,7 @@ const AdminDashboard = () => {
           {activeTab === 'payment' && (
             <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
               <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Payment List</h2>
-              {error ? <p className="text-red-600">{error}</p> : (
+              {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
                 <ul className="space-y-4">
                   {payments.map((payment, i) => (
                     <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">

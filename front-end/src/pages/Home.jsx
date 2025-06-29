@@ -3,8 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
-import HomeIcon from '/home/uki/bicycle-rent-project/front-end/src/assets/home-icon.jpeg';
-import Parade from '/home/uki/bicycle-rent-project/front-end/src/assets/20130513172010324_2.jpg';
+import HomeIcon from '../assets/home-icon.jpeg';
+import Parade from '../assets/20130513172010324_2.jpg';
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
