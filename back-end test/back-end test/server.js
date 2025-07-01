@@ -10,11 +10,11 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import partnerRoutes from './routes/partnerRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-// import bicycleRoutes from './routes/bicycleRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';  // Correct import
 import trackingRoutes from './routes/trackingRoutes.js'; // Optional, if you want to track events
 import bikeRoutes from './routes/bikeRoutes.js'; // Import bicycle routes
+import bicycle from './routes/bicycleRoutes.js'; // Import bicycle model routes
 
 // import { errorHandler } from './middlewares/errorHandler.js'; // Uncomment if you have global error handling
 
@@ -35,11 +35,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/partner', partnerRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
-// app.use('/api/bicycles', bicycleRoutes);  // Better to use /api/bicycles for consistency
 app.use('/api/payments', paymentRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/tracking', trackingRoutes); // Optional, if you want to track events
 app.use('/api/bike', bikeRoutes); // Bicycle selection routes
+app.use('/api/bicycles', bicycle); // Bicycle model routes
 
 // Test route
 app.get('/', (req, res) => {

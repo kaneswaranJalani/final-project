@@ -32,39 +32,46 @@ const UserRegister = () => {
     setForm({ ...form, rentalPreferences: updated });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+  // 1. Password Match Check
+  if (form.password !== form.confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
 
-    if (!agreeTerms) {
-      alert("You must agree to the Terms and Conditions to proceed.");
-      return;
-    }
+  // 2. Terms Agreement Check
+  if (!agreeTerms) {
+    alert("You must agree to the Terms and Conditions to proceed.");
+    return;
+  }
 
-    try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/register", {
-        firstName: form.firstName,
-        lastName: form.lastName,
-        email: form.email,
-        password: form.password,
-        primaryPhone: form.primaryPhone,
-        secondaryPhone: form.secondaryPhone,
-        address: form.address,
-        idProof: form.idProof,
-        rentalPreferences: form.rentalPreferences,
-      });
+  try {
+    // 3. Check for undefined fields (optional debug)
+    console.log("Submitting form data:", form);
 
-      console.log("User Registered:", data);
-      navigate("/SuccessfulRegister");
-    } catch (error) {
-      console.error("Registration Error:", error.response?.data || error.message);
-      alert("Registration failed: " + (error.response?.data?.message || "Try again."));
-    }
-  };
+    const { data } = await axios.post("http://localhost:5000/api/auth/register", {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      password: form.password,
+      primaryPhone: form.primaryPhone,
+      secondaryPhone: form.secondaryPhone,
+      address: form.address,
+      idProof: form.idProof,
+      rentalPreferences: form.rentalPreferences,
+    });
+
+    console.log("User Registered:", data);
+    navigate("/SuccessfulRegister");
+  } catch (error) {
+    console.error("Registration Error:", error.response?.data || error.message || error);
+
+    alert("Registration failed: " + (error.response?.data?.message || error.message || "Try again."));
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#fdfbfb] to-[#ebedee] flex items-center justify-center px-4 py-10">

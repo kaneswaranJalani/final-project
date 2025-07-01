@@ -1,34 +1,42 @@
-// import Bicycle from '../models/bicycle.js';
+import Bicycle from '../models/bicycle.js';
 
-// // Get all bicycles
-// export const getAllBicycles = async (req, res) => {
-//   try {
-//     const bicycles = await Bicycle.find();
-//     res.json(bicycles);
-//   } catch (err) {
-//     res.status(500).json({ message: 'Failed to fetch bicycles' });
-//   }
-// };
+// GET all bicycles
+export const getBicycles = async (req, res) => {
+  try {
+    const bicycles = await Bicycle.find();
+    res.json(bicycles);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch bicycles' });
+  }
+};
 
-// // Create a new bicycle
-// export const createBicycle = async (req, res) => {
-//   try {
-//     const { bicycleName, category, price, bikeId } = req.body;
+// POST create a new bicycle
+export const addBicycle = async (req, res) => {
+  try {
+    const newBicycle = new Bicycle(req.body);
+    await newBicycle.save();
+    res.status(201).json(newBicycle);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to add bicycle' });
+  }
+};
 
-//     if (!bicycleName || !category || !price || !bikeId) {
-//       return res.status(400).json({ message: 'All fields are required' });
-//     }
+// PUT update a bicycle
+export const updateBicycle = async (req, res) => {
+  try {
+    const updatedBike = await Bicycle.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedBike);
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to update bicycle' });
+  }
+};
 
-//     const newBicycle = new Bicycle({
-//       bicycleName,
-//       category,
-//       price,
-//       bikeId,
-//     });
-
-//     const savedBicycle = await newBicycle.save();
-//     res.status(201).json(savedBicycle);
-//   } catch (err) {
-//     res.status(500).json({ message: 'Failed to create bicycle', error: err.message });
-//   }
-// };
+// DELETE bicycle
+export const deleteBicycle = async (req, res) => {
+  try {
+    await Bicycle.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Bicycle deleted' });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to delete bicycle' });
+  }
+};
