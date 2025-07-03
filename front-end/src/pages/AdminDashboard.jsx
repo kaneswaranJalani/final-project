@@ -131,7 +131,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen font-sans bg-gradient-to-br from-slate-100 to-white">
-      {/* Sidebar */}
       <aside className={`${sidebarOpen ? 'w-64' : 'w-20'} transition-all duration-300 bg-white shadow-md`}>
         <div className="p-4 flex items-center justify-between border-b">
           {sidebarOpen && <h1 className="text-2xl font-bold text-[#67103d]">Admin</h1>}
@@ -153,29 +152,23 @@ const AdminDashboard = () => {
         </nav>
       </aside>
 
-      {/* Content */}
       <main className="flex-1 overflow-auto">
         <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-[#67103d] capitalize">{activeTab}</h2>
           <div className="flex items-center gap-4">
             <div className="relative">
               <FiSearch className="absolute left-3 top-3 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="pl-10 pr-4 py-2 border rounded-lg bg-gray-50"
-              />
+              <input type="text" placeholder="Search..." className="pl-10 pr-4 py-2 border rounded-lg bg-gray-50" />
             </div>
             <FiBell className="text-gray-500" />
           </div>
         </header>
 
         <section className="p-6">
-          {/* Dashboard */}
           {activeTab === 'dashboard' && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {stats.map((stat, i) => (
-                <div key={i} className="backdrop-blur-lg bg-white/60 p-6 rounded-xl shadow-lg border">
+                <div key={i} className="bg-white p-6 rounded-xl shadow border">
                   <div className="flex items-center gap-3">
                     <div className="text-[#67103d]">{stat.icon}</div>
                     <div>
@@ -188,113 +181,89 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* Users */}
-          {activeTab === 'users' && (
-            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
-              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">User List</h2>
+          {['users', 'orders', 'payment'].includes(activeTab) && (
+            <div className="bg-white p-4 rounded-xl shadow">
+              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">{activeTab === 'users' ? 'User List' : activeTab === 'orders' ? 'Order List' : 'Payment List'}</h2>
               {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
-                <ul className="space-y-4">
-                  {users.map((user, i) => (
-                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
-                      <div>
-                        <p className="font-medium text-[#333]">{user.name}</p>
-                        <p className="text-sm text-gray-600">{user.email}</p>
-                        <p className="text-sm text-gray-500">Role: {user.role}</p>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        <select
-                          value={user.role}
-                          onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                          className="border px-2 py-1 rounded text-sm"
-                        >
-                          <option value="user">User</option>
-                          <option value="partner">Partner</option>
-                          <option value="admin">Admin</option>
-                        </select>
-                        <button
-                          onClick={() => handleDeleteUser(user._id)}
-                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-
-          {/* Orders */}
-          {activeTab === 'orders' && (
-            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
-              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Order List</h2>
-              {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
-                <ul className="space-y-4">
-                  {orders.map((order, i) => (
-                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
-                      <div>
-                        <p className="font-semibold text-[#67103d]">{order.name}</p>
-                        <p className="text-sm text-gray-600">Color: {order.color}</p>
-                        <p className="text-sm text-gray-600">Price: Rs. {order.price}</p>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        <select
-                          value={order.status || 'Pending'}
-                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                          className="border px-3 py-1 rounded text-sm bg-white"
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Confirmed">Confirmed</option>
-                          <option value="Cancelled">Cancelled</option>
-                        </select>
-                        <button
-                          onClick={() => handleDeleteOrder(order._id)}
-                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-
-          {/* Payments */}
-          {activeTab === 'payment' && (
-            <div className="bg-white/60 backdrop-blur-md p-6 rounded-xl shadow">
-              <h2 className="text-xl font-semibold mb-4 text-[#67103d]">Payment List</h2>
-              {loading ? <p>Loading...</p> : error ? <p className="text-red-600">{error}</p> : (
-                <ul className="space-y-4">
-                  {payments.map((payment, i) => (
-                    <li key={i} className="p-4 border rounded-md flex justify-between items-center bg-white/70">
-                      <div>
-                        <p className="font-semibold text-[#67103d]">{payment.bikeName}</p>
-                        <p className="text-sm text-gray-600">Amount: Rs. {payment.amount}</p>
-                        <p className="text-sm text-gray-600">Color: {payment.color}</p>
-                      </div>
-                      <div className="flex gap-2 items-center">
-                        <select
-                          value={payment.status || 'Paid'}
-                          onChange={(e) => handlePaymentStatusChange(payment._id, e.target.value)}
-                          className="border px-3 py-1 rounded text-sm bg-white"
-                        >
-                          <option value="Paid">Paid</option>
-                          <option value="Failed">Failed</option>
-                          <option value="Refunded">Refunded</option>
-                        </select>
-                        <button
-                          onClick={() => handleDeletePayment(payment._id)}
-                          className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50"
-                        >
-                          🗑️
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left border">
+                    <thead className="bg-[#f3f0f4] text-gray-700">
+                      <tr>
+                        {activeTab === 'users' && (<><th className="p-2">Name</th><th className="p-2">Email</th><th className="p-2">Role</th><th className="p-2">Actions</th></>)}
+                        {activeTab === 'orders' && (<><th className="p-2">Name</th><th className="p-2">Color</th><th className="p-2">Price</th><th className="p-2">Status</th><th className="p-2">Actions</th></>)}
+                        {activeTab === 'payment' && (<><th className="p-2">Bike</th><th className="p-2">Color</th><th className="p-2">Amount</th><th className="p-2">Status</th><th className="p-2">Actions</th></>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(activeTab === 'users' ? users : activeTab === 'orders' ? orders : payments).map((item, i) => (
+                        <tr key={i} className="border-t hover:bg-gray-50">
+                          {activeTab === 'users' && (
+                            <>
+                              <td className="p-2">{item.name}</td>
+                              <td className="p-2">{item.email}</td>
+                              <td className="p-2">
+                                <select
+                                  value={item.role}
+                                  onChange={(e) => handleRoleChange(item._id, e.target.value)}
+                                  className="border px-2 py-1 rounded text-sm"
+                                >
+                                  <option value="user">User</option>
+                                  <option value="partner">Partner</option>
+                                  <option value="admin">Admin</option>
+                                </select>
+                              </td>
+                              <td className="p-2">
+                                <button onClick={() => handleDeleteUser(item._id)} className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50">🗑️</button>
+                              </td>
+                            </>
+                          )}
+                          {activeTab === 'orders' && (
+                            <>
+                              <td className="p-2 font-medium text-[#67103d]">{item.name}</td>
+                              <td className="p-2">{item.color}</td>
+                              <td className="p-2">Rs. {item.price}</td>
+                              <td className="p-2">
+                                <select
+                                  value={item.status || 'Pending'}
+                                  onChange={(e) => handleStatusChange(item._id, e.target.value)}
+                                  className="border px-2 py-1 rounded text-sm bg-white"
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                </select>
+                              </td>
+                              <td className="p-2">
+                                <button onClick={() => handleDeleteOrder(item._id)} className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50">🗑️</button>
+                              </td>
+                            </>
+                          )}
+                          {activeTab === 'payment' && (
+                            <>
+                              <td className="p-2 font-medium text-[#67103d]">{item.bikeName}</td>
+                              <td className="p-2">{item.color}</td>
+                              <td className="p-2">Rs. {item.amount}</td>
+                              <td className="p-2">
+                                <select
+                                  value={item.status || 'Paid'}
+                                  onChange={(e) => handlePaymentStatusChange(item._id, e.target.value)}
+                                  className="border px-2 py-1 rounded text-sm bg-white"
+                                >
+                                  <option value="Paid">Paid</option>
+                                  <option value="Failed">Failed</option>
+                                  <option value="Refunded">Refunded</option>
+                                </select>
+                              </td>
+                              <td className="p-2">
+                                <button onClick={() => handleDeletePayment(item._id)} className="text-red-600 text-sm px-3 py-1 border border-red-300 rounded hover:bg-red-50">🗑️</button>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           )}

@@ -90,7 +90,7 @@ const Home = () => {
             <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
               <h1 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
               Ride the City <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-[#67103d]">
+                <span className="text-transparent bg-clip-text bg-white">
                 Your Way
                 </span>
               </h1>
@@ -109,7 +109,7 @@ const Home = () => {
               </div>
             </div>
             <div className="w-full lg:w-1/2 relative">
-              <img src={HomeIcon} alt="SK Rentals Vehicles" className="rounded-2xl hero-image w-full h-auto max-w-md mx-auto shadow-xl" />
+              <img src={HomeIcon} alt="SK Rentals Vehicles" className="rounded-2xl hero-image w-800px h-800px shadow-xl" />
             </div>
           </div>
         </div>

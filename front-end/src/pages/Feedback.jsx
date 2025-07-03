@@ -1,92 +1,133 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react'; // clean modern back icon
+import { ArrowLeft, Star, MessageSquare, Send } from 'lucide-react';
 
 const Feedback = () => {
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
   const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ rating, comment });
-    setRating('');
-    setComment('');
-    navigate('/');
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log({ rating, comment });
+      navigate('/', { state: { rating } });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl p-8 sm:p-10">
-        {/* Icon-only Back Button */}
-        <button
-          onClick={() => navigate(-1)}
-          className="text-[#67103d] hover:text-[#4c092b] transition mb-6 focus:outline-none"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-
-        {/* Title */}
-        <div className="mb-6 text-center">
-          <h1 className="text-3xl font-extrabold text-[#67103d] mb-2">We value your feedback</h1>
-          <p className="text-gray-600 text-sm">Help us improve your Rideloop experience</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Rating Buttons */}
-          <div>
-            <label className="block text-gray-800 text-sm font-medium mb-3">
-              How would you rate your experience?
-            </label>
-            <div className="flex flex-wrap gap-3">
-              {['Excellent', 'Good', 'Average', 'Poor', 'Terrible'].map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setRating(option.toLowerCase())}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition duration-200 border ${
-                    rating === option.toLowerCase()
-                      ? 'bg-[#67103d] text-white border-[#67103d]'
-                      : 'bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200'
-                  }`}
-                >
-                  {option}
-                </button>
-              ))}
+    <div className="min-h-screen bg-[#f9f5f7] flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
+        {/* Header with accent color */}
+        <div className="bg-[#67103d] p-6 text-white">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-full hover:bg-white/20 transition"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold">Your Feedback</h1>
+              <p className="text-[#d9b8c8] text-sm">We'd love to hear your thoughts</p>
             </div>
           </div>
+        </div>
 
-          {/* Comment Box */}
-          <div>
-            <label htmlFor="comment" className="block text-gray-800 text-sm font-medium mb-2">
-              Share your thoughts (optional)
-            </label>
-            <textarea
-              id="comment"
-              name="comment"
-              rows="4"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Your feedback helps us improve..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:border-[#67103d] bg-gray-50 text-sm"
-            />
-          </div>
+        <div className="p-6 sm:p-8">
+          <form onSubmit={handleSubmit} className="space-y-8">
+            {/* Visual Rating */}
+            <div className="text-center">
+              <label className="block text-gray-700 font-medium mb-6">
+                How satisfied were you with your experience?
+              </label>
+              
+              <div className="flex justify-center gap-1 mb-3">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => setRating(star)}
+                    className="focus:outline-none transition-transform hover:scale-110"
+                  >
+                    <Star
+                      className={`w-9 h-9 ${
+                        (hoverRating || rating) >= star
+                          ? 'fill-[#67103d] text-[#67103d]'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+              
+              <div className="flex justify-between text-xs text-gray-500 px-2">
+                <span>Not satisfied</span>
+                <span>Very satisfied</span>
+              </div>
+            </div>
 
-          {/* Submit */}
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={!rating}
-              className={`px-6 py-2 rounded-xl text-white font-semibold transition-all duration-300 ${
-                rating
-                  ? 'bg-[#67103d] hover:bg-[#4c092b]'
-                  : 'bg-gray-300 cursor-not-allowed'
-              } focus:outline-none focus:ring-2 focus:ring-[#67103d] focus:ring-offset-2`}
-            >
-              Submit Feedback
-            </button>
-          </div>
-        </form>
+            {/* Comment Box with Floating Label */}
+            <div className="relative mt-10">
+              <div className="absolute -top-3 left-4 bg-white px-2 text-[#67103d] font-medium flex items-center gap-1">
+                <MessageSquare className="w-4 h-4" />
+                <span>Comments</span>
+              </div>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="What made your experience good or bad?"
+                rows="4"
+                className="w-full px-4 py-3 border-2 border-[#e8d8e1] rounded-lg focus:outline-none focus:border-[#67103d] focus:ring-2 focus:ring-[#f0e4eb] bg-white text-sm placeholder-gray-400 transition-all"
+              />
+              <div className="absolute bottom-3 right-3 text-xs text-gray-400 bg-white px-1 rounded">
+                {comment.length}/200
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={rating === 0 || isSubmitting}
+                className={`w-full py-3 px-6 rounded-lg font-semibold text-white transition-all flex items-center justify-center gap-2 ${
+                  rating > 0
+                    ? 'bg-[#67103d] hover:bg-[#4c092b] shadow-md hover:shadow-lg'
+                    : 'bg-gray-300 cursor-not-allowed'
+                }`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Submit Feedback
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Decorative Elements */}
+        <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-[#67103d] to-[#8a1a5a]"></div>
       </div>
     </div>
   );

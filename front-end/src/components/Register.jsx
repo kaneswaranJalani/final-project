@@ -50,7 +50,7 @@ const Register = () => {
         <div className="flex flex-col md:flex-row justify-center gap-8">
           {/* User Card */}
           <Link
-            to="/UserRegister"
+            to="/Terms"
             className="flex-1 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg px-8 py-10 rounded-xl hover:scale-[1.03] transition-all duration-300 group"
           >
             <h3 className="text-[#67103d] font-bold text-2xl mb-3">🚴‍♂️ User</h3>
@@ -61,7 +61,7 @@ const Register = () => {
 
           {/* Partner Card */}
           <Link
-            to="/PartnerRegister"
+            to="/Partnerterms"
             className="flex-1 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg px-8 py-10 rounded-xl hover:scale-[1.03] transition-all duration-300 group"
           >
             <h3 className="text-[#67103d] font-bold text-2xl mb-3">🤝 Partner</h3>
