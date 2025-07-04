@@ -5,19 +5,11 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import partnerRoutes from './routes/partnerRoutes.js';
-import feedbackRoutes from './routes/feedbackRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
-import eventRoutes from './routes/eventRoutes.js';  // Correct import
-import trackingRoutes from './routes/trackingRoutes.js'; // Optional, if you want to track events
+import bicycle from './models/bicycle.js';
 import bikeRoutes from './routes/bikeRoutes.js'; // Import bicycle routes
-import bicycle from './routes/bicycleRoutes.js'; // Import bicycle model routes
-
-// import { errorHandler } from './middlewares/errorHandler.js'; // Uncomment if you have global error handling
-
+import paymentRoutes from './routes/paymentRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -27,27 +19,18 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.json());
 
-
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/user', userRoutes);
-app.use('/api/partner', partnerRoutes);
-app.use('/api/feedbacks', feedbackRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/tracking', trackingRoutes); // Optional, if you want to track events
+app.use('/api/auth', authRoutes); 
+app.use('/api/users', userRoutes);
+app.use('/api/bicycles', bicycle); // Assuming you have a bicycle model and routes
 app.use('/api/bike', bikeRoutes); // Bicycle selection routes
-app.use('/api/bicycles', bicycle); // Bicycle model routes
+app.use('/api/payments', paymentRoutes);
 
-// Test route
 app.get('/', (req, res) => {
   res.send('Hello, Express!');
 });
 
-// Global Error Handler (optional)
-// app.use(errorHandler);
+
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)
@@ -57,7 +40,6 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
-  
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

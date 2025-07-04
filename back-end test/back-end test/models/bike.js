@@ -1,10 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
-const selectedBikeSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  price: { type: String, required: true },
-  color: { type: String, required: true },
-//   date: { type: Date, default: Date.now }
-});
+const bikeSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    color: { type: String, required: true },
+    category: { type: String },
+    status: { type: String, default: 'Pending' }
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model("SelectedBike", selectedBikeSchema);
+export default mongoose.model('Bike', bikeSchema);

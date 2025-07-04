@@ -1,8 +1,9 @@
 import Payment from '../models/payment.js';
 import Order from '../models/order.js';
-import User from '../models/User.js';
+import User from '../models/Users.js'; // ensure correct model name (Users.js or User.js)
 
-// Create a new payment
+
+// ✅ Create a new payment
 export const createPayment = async (req, res, next) => {
   try {
     const { user, order, amount, paymentMethod, status } = req.body;
@@ -18,29 +19,34 @@ export const createPayment = async (req, res, next) => {
       order,
       amount,
       paymentMethod,
-      status: status || 'pending', // default status if not provided
-      paymentDate: new Date() // auto set paymentDate to current time
+      status: status || 'pending',
+      paymentDate: new Date()
     });
 
     res.status(201).json(payment);
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };
 
-// Get all payments
+
+// ✅ Get all payments
 export const getPayments = async (req, res, next) => {
   try {
     const payments = await Payment.find()
-      .populate('user', 'name email')
+      .populate('user', 'name email') // ✅ correct field name
       .populate('order');
+
     res.json(payments);
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };
 
-// Get payment by ID
+
+// ✅ Get payment by ID
 export const getPaymentById = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id)
@@ -53,11 +59,13 @@ export const getPaymentById = async (req, res, next) => {
 
     res.json(payment);
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };
 
-// Update payment status
+
+// ✅ Update payment status
 export const updatePaymentStatus = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);
@@ -67,13 +75,16 @@ export const updatePaymentStatus = async (req, res, next) => {
 
     payment.status = req.body.status || payment.status;
     const updatedPayment = await payment.save();
+
     res.json(updatedPayment);
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };
 
-// Delete payment
+
+// ✅ Delete payment
 export const deletePayment = async (req, res, next) => {
   try {
     const payment = await Payment.findById(req.params.id);
@@ -81,9 +92,10 @@ export const deletePayment = async (req, res, next) => {
       return res.status(404).json({ message: 'Payment not found' });
     }
 
-    await payment.deleteOne();
+    await payment.deleteOne(); // ✅ correct method
     res.json({ message: 'Payment deleted' });
   } catch (err) {
+    console.error(err);
     next(err);
   }
 };

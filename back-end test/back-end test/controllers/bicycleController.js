@@ -1,42 +1,69 @@
-import Bicycle from '../models/bicycle.js';
+import Bicycle from "../models/bicycle.js";
 
-// GET all bicycles
-export const getBicycles = async (req, res) => {
-  try {
-    const bicycles = await Bicycle.find();
-    res.json(bicycles);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch bicycles' });
-  }
-};
-
-// POST create a new bicycle
+// Add a bicycle
 export const addBicycle = async (req, res) => {
   try {
-    const newBicycle = new Bicycle(req.body);
+    const { partnerId, type, model, price, stock } = req.body;
+    const newBicycle = new Bicycle({
+      partnerId,
+      type,
+      model,
+      price,
+      stock,
+      lastUpdate: new Date().toLocaleDateString(),
+    });
     await newBicycle.save();
     res.status(201).json(newBicycle);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to add bicycle' });
+    res.status(500).json({ message: "Failed to add bicycle", error: err.message });
   }
 };
 
-// PUT update a bicycle
-export const updateBicycle = async (req, res) => {
+// Get all bicycles for a partner
+export const getBicyclesByPartner = async (req, res) => {
   try {
-    const updatedBike = await Bicycle.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(updatedBike);
+    const { partnerId } = req.params;
+    const bikes = await Bicycle.find({ partnerId });
+    res.status(200).json(bikes);
   } catch (err) {
-    res.status(400).json({ error: 'Failed to update bicycle' });
+    res.status(500).json({ message: "Error fetching bicycles", error: err.message });
   }
 };
 
-// DELETE bicycle
+// Delete a bicycle
 export const deleteBicycle = async (req, res) => {
   try {
-    await Bicycle.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Bicycle deleted' });
+    const { id } = req.params;
+    await Bicycle.findByIdAndDelete(id);
+    res.status(200).json({ message: "Bicycle deleted successfully" });
   } catch (err) {
-    res.status(400).json({ error: 'Failed to delete bicycle' });
+    res.status(500).json({ message: "Error deleting bicycle", error: err.message });
+  }
+};
+
+// Submit all partner + bicycles (if needed in one request)
+export const submitPartnerData = async (req, res) => {
+  try {
+    const { partner, bicycles } = req.body;
+
+    // Save bicycles
+    const savedBicycles = await Promise.all(
+      bicycles.map((bike) => {
+        const newBike = new Bicycle({
+          partnerId: partner._id,
+          type: bike.type,
+          model: bike.model,
+          price: bike.price,
+          stock: bike.stock,
+          status: bike.status,
+          lastUpdate: bike.lastUpdate,
+        });
+        return newBike.save();
+      })
+    );
+
+    res.status(200).json({ message: "Data saved", bicycles: savedBicycles });
+  } catch (err) {
+    res.status(500).json({ message: "Submission failed", error: err.message });
   }
 };

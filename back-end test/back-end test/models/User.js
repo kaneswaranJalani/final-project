@@ -1,20 +1,23 @@
-import mongoose from 'mongoose';
+// models/User.js
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  email: { type: String, unique: true },
-  password: String,
-  primaryPhone: String,
-  secondaryPhone: String,
-  address: String,
-  idProof: String,
+  // From old schema
+  name: { type: String },
+
+  // From your registration form
+  firstName: { type: String, required: true },
+  lastName:  { type: String, required: true },
+  email:     { type: String, required: true, unique: true },
+  password:  { type: String, required: true },
+  primaryPhone: { type: String },
+  secondaryPhone: { type: String },
+  address: { type: String },
+  idProof: { type: String },
   rentalPreferences: [String],
-  role: {
-    type: String,
-    enum: ['user', 'partner', 'admin'], // make sure these match what you pass from frontend
-    default: 'user',
-  }
+
+  // User role (default = "user")
+  role: { type: String, default: "user" },
 }, { timestamps: true });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model("User", userSchema);

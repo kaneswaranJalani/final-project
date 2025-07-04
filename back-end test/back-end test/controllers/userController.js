@@ -1,85 +1,89 @@
-import User from '../models/User.js';
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
-// GET all users
-export const getAllUsers = async (req, res) => {
+// Register a new user
+export const registerUser = async (req, res) => {
   try {
-    const users = await User.find();
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      primaryPhone,
+      secondaryPhone,
+      address,
+      idProof,
+      rentalPreferences,
+    } = req.body;
 
-// GET user by ID
-export const getUserById = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// CREATE new user
-export const createUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
-  try {
-    const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: 'Email already exists' });
-
-    const newUser = new User({ name, email, password, role });
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// UPDATE user
-export const updateUser = async (req, res) => {
-  const { name, email, password, role } = req.body;
-  try {
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { name, email, password, role },
-      { new: true }
-    );
-    if (!updatedUser) return res.status(404).json({ message: 'User not found' });
-    res.json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-// DELETE user
-export const deleteUser = async (req, res) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
-    if (!deletedUser) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
-  }
-};
-
-
-export const addFeedback = async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { message, rating } = req.body;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
+    // Check if user already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "Email already registered" });
     }
 
-    user.feedbacks.push({ message, rating });
-    await user.save();
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.status(201).json({ message: 'Feedback added successfully', feedbacks: user.feedbacks });
+    // Create new user
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      primaryPhone,
+      secondaryPhone,
+      address,
+      idProof,
+      rentalPreferences,
+      role: "user"  // default role
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "User registered successfully", userId: newUser._id });
   } catch (err) {
-    next(err);
+    res.status(500).json({ message: "Registration failed", error: err.message });
+  }
+};
+
+// Get all users (exclude password)
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch users", error: err.message });
+  }
+};
+
+// Update user role by ID
+export const updateUserRole = async (req, res) => {
+  const userId = req.params.id;
+  const { role } = req.body;
+
+  if (!["user", "partner", "admin"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, { role }, { new: true }).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update user role", error: err.message });
+  }
+};
+
+// Delete user by ID
+export const deleteUser = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const deleted = await User.findByIdAndDelete(userId);
+    if (!deleted) return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete user", error: err.message });
   }
 };

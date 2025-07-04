@@ -1,12 +1,14 @@
+// models/Bicycle.js
 import mongoose from 'mongoose';
 
 const bicycleSchema = new mongoose.Schema({
-  type: { type: String, required: true },
-  model: { type: String, required: true },
-  price: { type: Number, required: true },
-  stock: { type: Number, required: true },
-  status: { type: String, enum: ['Active', 'Pending', 'Inactive'], default: 'Pending' },
-  updated: { type: Date, default: Date.now },
+  partner: { type: mongoose.Schema.Types.ObjectId, ref: 'Partner', required: true },
+  type: String,
+  model: String,
+  price: Number,
+  stock: Number,
+  status: { type: String, enum: ['Available', 'Low Stock', 'Out of Stock'], default: 'Available' },
+  lastUpdate: { type: Date, default: Date.now },
 });
 
 export default mongoose.model('Bicycle', bicycleSchema);
