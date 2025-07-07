@@ -54,7 +54,7 @@ const PartnerRegister = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      await axios.post('http://localhost:5000/api/auth/register/partner', formData);
       alert('✅ Partner registered successfully!');
       navigate('/PartnerProfile', { state: { partnerData: formData } });
     } catch (err) {

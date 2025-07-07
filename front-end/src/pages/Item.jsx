@@ -149,7 +149,7 @@ const Item = () => {
 
       {/* Trending Section */}
       {trendingBikes.length > 0 && (
-        <div className="max-w-7xl mx-auto mb-12">
+        <div className="max-w-5xl mx-auto mb-15">
           <div className="flex justify-between items-center mb-6 px-4">
             <h2 className="text-2xl font-bold text-gray-900">🔥 Trending Now</h2>
             <div className="flex items-center text-[#67103d]">

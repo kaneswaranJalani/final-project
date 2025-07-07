@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { useState } from 'react';
 
 const PartnerDashboard = () => {
   const partnerInfo = {
@@ -14,51 +13,44 @@ const PartnerDashboard = () => {
     image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1025&q=80"
   };
 
-  const [bicycles, setBicycles] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchBicycles = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/bicycles/${partnerInfo.email}`);
-        setBicycles(response.data);
-      } catch (err) {
-        console.error('Failed to fetch bicycles:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBicycles();
-  }, []);
+  const [bicycles, setBicycles] = useState([
+    {
+      _id: "1",
+      type: "Mountain",
+      model: "X-200",
+      price: 1500,
+      stock: 5,
+      status: "Available",
+      lastUpdate: "2025-07-01"
+    },
+    {
+      _id: "2",
+      type: "Road",
+      model: "Speedster",
+      price: 1800,
+      stock: 2,
+      status: "Low Stock",
+      lastUpdate: "2025-06-25"
+    }
+  ]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm("Are you sure you want to delete this bicycle?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/bicycles/${id}`);
-        setBicycles(prev => prev.filter(b => b._id !== id));
-      } catch (err) {
-        console.error('Failed to delete:', err);
-      }
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this bicycle?")) {
+      setBicycles(prev => prev.filter(b => b._id !== id));
     }
   };
 
-  const handleStatusChange = async (id, newStatus) => {
-    try {
-      const bikeToUpdate = bicycles.find(b => b._id === id);
-      await axios.put(`http://localhost:5000/api/bicycles/${id}`, {
-        ...bikeToUpdate,
-        status: newStatus,
-        lastUpdate: new Date()
-      });
-      setBicycles(prev => prev.map(b => b._id === id ? { ...b, status: newStatus } : b));
-    } catch (err) {
-      console.error('Status update failed', err);
-    }
+  const handleStatusChange = (id, newStatus) => {
+    setBicycles(prev =>
+      prev.map(b =>
+        b._id === id ? { ...b, status: newStatus, lastUpdate: new Date().toISOString() } : b
+      )
+    );
   };
 
   return (
@@ -90,9 +82,7 @@ const PartnerDashboard = () => {
       <div className="bg-white rounded-2xl shadow-md p-6">
         <h2 className="text-xl font-bold text-[#67103d] mb-4">📋 Bicycle Inventory</h2>
 
-        {loading ? (
-          <p className="text-gray-500">Loading...</p>
-        ) : bicycles.length === 0 ? (
+        {bicycles.length === 0 ? (
           <p className="text-gray-500 italic">No bicycles available.</p>
         ) : (
           <div className="overflow-x-auto">
@@ -115,7 +105,7 @@ const PartnerDashboard = () => {
                     <td className="px-4 py-3 font-medium text-gray-800">{bike._id}</td>
                     <td className="px-4 py-3">{bike.type}</td>
                     <td className="px-4 py-3">{bike.model}</td>
-                    <td className="px-4 py-3 text-green-700 font-semibold">${bike.price.toFixed(2)}</td>
+                    <td className="px-4 py-3 text-green-700 font-semibold">Rs. {bike.price.toFixed(2)}</td>
                     <td className="px-4 py-3">{bike.stock}</td>
                     <td className="px-4 py-3">
                       <select
