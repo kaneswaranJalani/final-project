@@ -39,7 +39,7 @@ const AdminDashboard = () => {
     setLoading(true);
     try {
       const [usersRes, ordersRes, paymentsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/users/'),
+        axios.get('http://localhost:5000/api/auth/all'),
         axios.get('http://localhost:5000/api/bike/all'),
         axios.get('http://localhost:5000/api/payments/all')
       ]);
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/users/');
+      const res = await axios.get('http://localhost:5000/api/auth/all');
       setUsers(res.data);
       setError(null);
     } catch {
@@ -110,7 +110,7 @@ const AdminDashboard = () => {
   // Handle user role change
   const handleRoleChange = async (userId, newRole) => {
     try {
-      await axios.put(`http://localhost:5000/api/users/${userId}`, { role: newRole });
+      await axios.put(`http://localhost:5000/api/auth/${userId}`, { role: newRole });
       setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
     } catch {
       alert(" Failed to update role");
@@ -121,7 +121,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/users/${userId}`);
+      await axios.delete(`http://localhost:5000/api/auth/${userId}`);
       setUsers(prev => prev.filter(u => u._id !== userId));
     } catch {
       alert(" Failed to delete user");

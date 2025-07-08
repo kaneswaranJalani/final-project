@@ -27,12 +27,12 @@ import bike5 from "../assets/bike5.jpg";
 import bike6 from "../assets/bike6.jpg";
 
 const bikes = [
-  { id: 1, image: bike1, name: "Speedster X", price: "1000", category: "Man", trending: true, rating: 4.8 },
-  { id: 2, image: bike2, name: "Retro Lady", price: "1500", category: "Female", trending: false, rating: 4.5 },
-  { id: 3, image: bike3, name: "Mountain Pro", price: "1300", category: "Man", trending: true, rating: 4.9 },
-  { id: 4, image: bike4, name: "City Cruiser", price: "1200", category: "Child", trending: false, rating: 4.2 },
-  { id: 5, image: bike5, name: "Dirt King", price: "1000", category: "Child", trending: true, rating: 4.7 },
-  { id: 6, image: bike6, name: "Vintage Ride", price: "1800", category: "Man", trending: false, rating: 4.6 }
+  { id: 1, image: bike1, name: "Speedster X", price: 1000, category: "Man", trending: true, rating: 4.8 },
+  { id: 2, image: bike2, name: "Retro Lady", price: 1500, category: "Female", trending: false, rating: 4.5 },
+  { id: 3, image: bike3, name: "Mountain Pro", price: 1300, category: "Man", trending: true, rating: 4.9 },
+  { id: 4, image: bike4, name: "City Cruiser", price: 1200, category: "Child", trending: false, rating: 4.2 },
+  { id: 5, image: bike5, name: "Dirt King", price: 1000, category: "Child", trending: true, rating: 4.7 },
+  { id: 6, image: bike6, name: "Vintage Ride", price: 1800, category: "Man", trending: false, rating: 4.6 }
 ];
 
 const categories = [
@@ -47,6 +47,14 @@ const statusOptions = [
   { value: "available", label: "Available", icon: <FiCheckCircle /> },
   { value: "rented", label: "Rented", icon: <FiClock /> },
   { value: "maintenance", label: "Maintenance", icon: <FiXCircle /> }
+];
+
+const timeOptions = [
+  { value: 1, label: "1 hour" },
+  { value: 4, label: "4 hours" },
+  { value: 8, label: "8 hours" },
+  { value: 24, label: "1 day" },
+  { value: 168, label: "1 week" }
 ];
 
 const CustomArrow = ({ onClick, direction }) => (
@@ -66,6 +74,7 @@ const Item = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBike, setSelectedBike] = useState(null);
   const [selectedColor, setSelectedColor] = useState("");
+  const [selectedTime, setSelectedTime] = useState(1);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -85,6 +94,11 @@ const Item = () => {
     setSelectedColor(color);
   };
 
+  const calculateTotalPrice = () => {
+    if (!selectedBike) return 0;
+    return selectedBike.price * selectedTime;
+  };
+
   const handlePay = async () => {
     if (!selectedColor) {
       alert("❗ Please select a color first.");
@@ -94,16 +108,18 @@ const Item = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/bike/add", {
         name: selectedBike.name,
-        price: selectedBike.price,
-        color: selectedColor
+        price: calculateTotalPrice(),
+        color: selectedColor,
+        duration: selectedTime
       });
 
       if (res.status === 201) {
         navigate("/payment", {
           state: {
             name: selectedBike.name,
-            price: selectedBike.price,
-            color: selectedColor
+            price: calculateTotalPrice(),
+            color: selectedColor,
+            duration: selectedTime
           }
         });
       }
@@ -182,11 +198,12 @@ const Item = () => {
                     </div>
                     <p className="text-gray-500 text-sm mb-3">{bike.category}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold text-[#67103d]">Rs. {bike.price}</span>
+                      <span className="text-xl font-bold text-[#67103d]">Rs. {bike.price}/hour</span>
                       <button
                         onClick={() => {
                           setSelectedBike(bike);
                           setSelectedColor("");
+                          setSelectedTime(1);
                         }}
                         className="bg-[#67103d] text-white px-3 py-1 rounded-lg text-sm flex items-center"
                       >
@@ -304,11 +321,12 @@ const Item = () => {
                     </div>
                     <p className="text-gray-500 text-sm mb-3">{bike.category}</p>
                     <div className="flex justify-between items-center">
-                      <span className="text-xl font-bold text-[#67103d]">Rs. {bike.price}</span>
+                      <span className="text-xl font-bold text-[#67103d]">Rs. {bike.price}/hour</span>
                       <button
                         onClick={() => {
                           setSelectedBike(bike);
                           setSelectedColor("");
+                          setSelectedTime(1);
                         }}
                         className="bg-[#67103d] text-white px-3 py-1 rounded-lg text-sm flex items-center hover:bg-[#500c2e] transition"
                       >
@@ -351,7 +369,29 @@ const Item = () => {
               </div>
               
               <div className="mb-6">
-                <p className="text-3xl font-bold text-[#67103d] mb-4">Rs. {selectedBike.price}</p>
+                <div className="flex items-end gap-2 mb-4">
+                  <p className="text-3xl font-bold text-[#67103d]">Rs. {calculateTotalPrice()}</p>
+                  <p className="text-gray-500 text-sm mb-1">(Rs. {selectedBike.price}/hour)</p>
+                </div>
+                
+                <div className="mb-4">
+                  <p className="font-semibold mb-3">Select Rental Duration:</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {timeOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setSelectedTime(option.value)}
+                        className={`px-4 py-2 rounded-lg font-medium border-2 transition-all ${
+                          selectedTime === option.value
+                            ? "bg-[#67103d] text-white border-[#67103d]"
+                            : "border-gray-300 hover:bg-gray-100"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 
                 <div className="mb-6">
                   <p className="font-semibold mb-3">Select Color:</p>
@@ -387,7 +427,7 @@ const Item = () => {
                     selectedColor ? "bg-[#67103d] hover:bg-[#500c2e]" : "bg-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  <FiShoppingCart /> Rent Now
+                  <FiShoppingCart /> Rent Now (Rs. {calculateTotalPrice()})
                 </button>
               </div>
             </div>
