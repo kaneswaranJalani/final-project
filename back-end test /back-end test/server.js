@@ -9,6 +9,7 @@ import authRoutes from './routes/authRoutes.js';
 import bicycle from './models/bicycle.js';
 import bikeRoutes from './routes/bikeRoutes.js'; // Import bicycle routes
 import paymentRoutes from './routes/paymentRoutes.js';
+import stripeRoutes from './routes/stripeRoutes.js';
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/bicycles', bicycle); // Assuming you have a bicycle model and routes
 app.use('/api/bike', bikeRoutes); // Bicycle selection routes
 app.use('/api/payments', paymentRoutes); // Payment routes
+app.use('/api/stripe', stripeRoutes);
 
 
 

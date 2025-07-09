@@ -7,6 +7,7 @@ import {
 } from 'react-icons/fi';
 import { Bar, Pie, Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
+import { RiUserStarLine } from "react-icons/ri";
 Chart.register(...registerables);
 
 const AdminDashboard = () => {
@@ -128,6 +129,30 @@ const AdminDashboard = () => {
     }
   };
 
+  //Fetch partners
+  const fetchPartners = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('http://localhost:5000/api/partners/pending');
+      setPartners(res.data);
+      setError(null);
+    } catch {
+      setError('Failed to load partners');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //Update partner status
+  const updatePartnerStatus = async (partnerId, status) => {
+    try {
+      await axios.put(`http://localhost:5000/api/partners/${partnerId}/status`, { status });
+      setPartners(prev => prev.filter(p => p._id !== partnerId));
+    } catch (err) {
+      alert("Failed to update partner status");
+    }
+  };
+
   // You can add similar handlers for orders and payments if needed
 
   // Chart data configurations (same as you provided)
@@ -178,7 +203,10 @@ const AdminDashboard = () => {
     { icon: <FiUsers />, name: 'Users', key: 'users' },
     { icon: <FiShoppingCart />, name: 'Orders', key: 'orders' },
     { icon: <FiPieChart />, name: 'Payments', key: 'payment' },
+    { icon: <RiUserStarLine/>, name: 'Partners', key: 'partners' },
     { icon: <FiSettings />, name: 'Settings', key: 'settings' }
+    
+
   ];
 
   return (
@@ -485,6 +513,70 @@ const AdminDashboard = () => {
                               </td>
                             </>
                           )}
+                          {/* Partner Approval Tab */}
+        {activeTab === 'partners' && (
+          <section className="p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+              <div className="p-5 border-b border-gray-100 flex justify-between items-center">
+                <h2 className="text-lg font-semibold text-gray-800">Partner Requests</h2>
+                <button 
+                  onClick={fetchPartners}
+                  className="flex items-center text-sm text-[#67103d] hover:text-[#50052c]"
+                >
+                  <FiRefreshCw className="mr-1" size={14} /> Refresh
+                </button>
+              </div>
+              {loading ? (
+                <div className="p-8 text-center text-gray-500">Loading...</div>
+              ) : error ? (
+                <div className="p-8 text-center text-red-500">{error}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Business</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {partners.map((partner) => (
+                        <tr key={partner._id}>
+                          <td className="px-6 py-4 text-sm font-medium text-gray-900">{partner.name}</td>
+                          <td className="px-6 py-4 text-sm text-gray-500">{partner.email}</td>
+                          <td className="px-6 py-4 text-sm text-gray-500">{partner.phone}</td>
+                          <td className="px-6 py-4 text-sm text-gray-500">{partner.businessName}</td>
+                          <td className="px-6 py-4 text-sm">
+                            <button
+                              onClick={() => updatePartnerStatus(partner._id, 'approved')}
+                              className="bg-green-500 text-white px-3 py-1 rounded mr-2 hover:bg-green-600"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => updatePartnerStatus(partner._id, 'rejected')}
+                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {partners.length === 0 && (
+                        <tr>
+                          <td colSpan="5" className="text-center py-6 text-gray-400">No partner requests found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </section>
+        )}
                         </tr>
                       ))}
                     </tbody>
