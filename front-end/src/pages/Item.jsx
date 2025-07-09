@@ -27,12 +27,12 @@ import bike5 from "../assets/bike5.jpg";
 import bike6 from "../assets/bike6.jpg";
 
 const bikes = [
-  { id: 1, image: bike1, name: "Speedster X", price: 1000, category: "Man", trending: true, rating: 4.8 },
-  { id: 2, image: bike2, name: "Retro Lady", price: 1500, category: "Female", trending: false, rating: 4.5 },
-  { id: 3, image: bike3, name: "Mountain Pro", price: 1300, category: "Man", trending: true, rating: 4.9 },
-  { id: 4, image: bike4, name: "City Cruiser", price: 1200, category: "Child", trending: false, rating: 4.2 },
-  { id: 5, image: bike5, name: "Dirt King", price: 1000, category: "Child", trending: true, rating: 4.7 },
-  { id: 6, image: bike6, name: "Vintage Ride", price: 1800, category: "Man", trending: false, rating: 4.6 }
+  { id: 1, image: bike1, name: "Speedster X", price: 100, category: "Man", trending: true, rating: 4.8 },
+  { id: 2, image: bike2, name: "Retro Lady", price: 150, category: "Female", trending: false, rating: 4.5 },
+  { id: 3, image: bike3, name: "Mountain Pro", price: 130, category: "Man", trending: true, rating: 4.9 },
+  { id: 4, image: bike4, name: "City Cruiser", price: 200, category: "Child", trending: false, rating: 4.2 },
+  { id: 5, image: bike5, name: "Dirt King", price: 100, category: "Child", trending: true, rating: 4.7 },
+  { id: 6, image: bike6, name: "Vintage Ride", price: 180, category: "Man", trending: false, rating: 4.6 }
 ];
 
 const categories = [

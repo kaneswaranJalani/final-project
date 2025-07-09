@@ -18,6 +18,7 @@ import PartnerWelcome from "./pages/PartnerWelcome"
 import PartnerDashboard from "./pages/PartnerDashboard"
 import BicycleTracking from "./pages/BicycleTracking"
 import PartnerVerification from "./pages/PartnerVerification"
+import Modal from "./pages/ModalForm"
 import { BrowserRouter as Router,Routes,Route } from "react-router-dom";
 function App() {
   
@@ -46,6 +47,7 @@ function App() {
       <Route path="/PartnerDashboard" element={<PartnerDashboard/>}/>
       <Route path="/BicycleTracking" element={<BicycleTracking/>}/>
       <Route path="/PartnerVerification" element={<PartnerVerification/>}/>
+      <Route path="/Modal" element={<Modal/>}/>
      </Routes>
     {/* <Footer/> */}
      
