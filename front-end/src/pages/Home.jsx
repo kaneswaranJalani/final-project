@@ -89,13 +89,13 @@ const Home = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between">
             <div className="w-full lg:w-1/2 text-center lg:text-left mb-12 lg:mb-0">
               <h1 ref={headingRef} className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
-              Ride the City <br />
+                Ride the City <br />
                 <span className="text-transparent bg-clip-text bg-white">
-                Your Way
+                  Your Way
                 </span>
               </h1>
               <p ref={subheadingRef} className="mt-6 text-xl text-gray-200 max-w-lg mx-auto lg:mx-0">
-              Discover affordable bike rentals at 100+ locations across the city. Perfect for commuting, exploring, or just enjoying a ride.
+                Discover affordable bike rentals at 100+ locations across the city. Perfect for commuting, exploring, or just enjoying a ride.
               </p>
               <div ref={ctaRef} className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button
@@ -105,7 +105,6 @@ const Home = () => {
                   Join with us
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
-                
               </div>
             </div>
             <div className="w-full lg:w-1/2 relative">
@@ -114,8 +113,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-       
 
       {/* Cycle Parade Section */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-100">
@@ -128,6 +125,58 @@ const Home = () => {
             <p className="text-gray-600 leading-relaxed">
               A cycle parade is a public event where a group of people ride bicycles together along a planned route. It is often organized to promote eco-friendly transportation, health awareness, or special causes. Participants of all ages join the parade, making it a fun and energetic event. Cycle parades help spread important messages while encouraging the use of bicycles as a clean and healthy mode of transport.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Services Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#67103d] mb-4">Our Services</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              We offer a variety of bike rental services to meet all your cycling needs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Hourly Rentals",
+                description: "Perfect for short trips around the city. Rent by the hour with flexible return options.",
+                icon: "⏱️"
+              },
+              {
+                title: "Daily Rentals",
+                description: "Explore the city at your own pace with our affordable daily rental packages.",
+                icon: "🌞"
+              },
+              {
+                title: "Weekly Packages",
+                description: "Great for longer stays or regular commuters. Discounted rates for weekly rentals.",
+                icon: "📅"
+              },
+              {
+                title: "Group Tours",
+                description: "Guided cycling tours of the city's best routes and attractions for groups.",
+                icon: "👥"
+              }
+            ].map((service, index) => (
+              <div 
+                key={index}
+                className="bg-gray-50 p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
+              >
+                <div className="text-4xl mb-4">{service.icon}</div>
+                <h3 className="text-xl font-bold text-[#67103d] mb-3">{service.title}</h3>
+                <p className="text-gray-600">{service.description}</p>
+                <button 
+                  onClick={() => navigate('/services')}
+                  className="mt-4 text-[#67103d] font-medium hover:underline flex items-center gap-1"
+                >
+                  Learn more <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </section>
