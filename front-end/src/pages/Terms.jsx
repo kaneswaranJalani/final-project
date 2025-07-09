@@ -58,7 +58,7 @@ const UserTerms = () => {
               <button
                 className="w-full px-5 py-2.5 rounded-md bg-gradient-to-r from-[#67103d] to-[#9a1b60] text-white font-medium hover:opacity-90 transition transform hover:scale-105 flex items-center justify-center"
               >
-                Proceed to Registration
+                accept and continue
                 <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                 </svg>
