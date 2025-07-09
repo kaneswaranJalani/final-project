@@ -68,7 +68,7 @@ const PartnerTerms = () => {
             <button
               className="w-full px-5 py-2.5 rounded-md bg-gradient-to-r from-[#67103d] to-[#9a1b60] text-white font-medium hover:shadow-lg transition flex items-center justify-center gap-2"
             >
-              Continue to Registration
+              accpet and continue
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
