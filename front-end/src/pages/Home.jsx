@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight } from "lucide-react";
-import HomeIcon from '../assets/home-icon.jpeg';
+import HomeIcon from '../assets/home-icon2.jpeg';
 import Parade from '../assets/20130513172010324_2.jpg';
 
 if (typeof window !== "undefined") {
@@ -100,7 +100,7 @@ const Home = () => {
               <div ref={ctaRef} className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <button
                   onClick={() => navigate('/register')}
-                  className="px-8 py-4 rounded-lg bg-[#67103d] text-white font-bold text-lg shadow-lg hover:bg-[#4c092b] transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group"
+                  className="px-8 py-4 rounded-lg bg-white text-[#67103d] font-bold text-lg shadow-lg hover:bg-[#4c092b] transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group"
                 >
                   Join with us
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -108,7 +108,7 @@ const Home = () => {
               </div>
             </div>
             <div className="w-full lg:w-1/2 relative">
-              <img src={HomeIcon} alt="SK Rentals Vehicles" className="rounded-2xl hero-image w-800px h-800px shadow-xl" />
+              <img src={HomeIcon} alt="SK Rentals Vehicles" className="rounded-2xl hero-image w-800px h-800px" />
             </div>
           </div>
         </div>
@@ -169,12 +169,7 @@ const Home = () => {
                 <div className="text-4xl mb-4">{service.icon}</div>
                 <h3 className="text-xl font-bold text-[#67103d] mb-3">{service.title}</h3>
                 <p className="text-gray-600">{service.description}</p>
-                <button 
-                  onClick={() => navigate('/services')}
-                  className="mt-4 text-[#67103d] font-medium hover:underline flex items-center gap-1"
-                >
-                  Learn more <ArrowRight className="w-4 h-4" />
-                </button>
+                
               </div>
             ))}
           </div>
