@@ -45,6 +45,7 @@ const UserRegister = () => {
       });
 
       navigate("/SuccessfulRegister");
+      alert("Registration successful! ");
     } catch (error) {
       console.error("Registration failed:", error.response?.data || error.message);
       alert("Error: " + (error.response?.data?.message || "Registration failed"));

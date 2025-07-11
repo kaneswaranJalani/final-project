@@ -12,7 +12,8 @@ import {
   FiXCircle,
   FiStar,
   FiArrowRight,
-  FiArrowLeft
+  FiArrowLeft,
+  FiTrash2
 } from "react-icons/fi";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
@@ -27,12 +28,12 @@ import bike5 from "../assets/bike5.jpg";
 import bike6 from "../assets/bike6.jpg";
 
 const bikes = [
-  { id: 1, image: bike1, name: "Speedster X", price: 1000, category: "Man", trending: true, rating: 4.8 },
-  { id: 2, image: bike2, name: "Retro Lady", price: 1500, category: "Female", trending: false, rating: 4.5 },
-  { id: 3, image: bike3, name: "Mountain Pro", price: 1300, category: "Man", trending: true, rating: 4.9 },
-  { id: 4, image: bike4, name: "City Cruiser", price: 1200, category: "Child", trending: false, rating: 4.2 },
-  { id: 5, image: bike5, name: "Dirt King", price: 1000, category: "Child", trending: true, rating: 4.7 },
-  { id: 6, image: bike6, name: "Vintage Ride", price: 1800, category: "Man", trending: false, rating: 4.6 }
+  { id: 1, image: bike1, name: "Speedster X", price: 100, category: "Man", trending: true, rating: 4.8 },
+  { id: 2, image: bike2, name: "Retro Lady", price: 150, category: "Female", trending: false, rating: 4.5 },
+  { id: 3, image: bike3, name: "Mountain Pro", price: 130, category: "Man", trending: true, rating: 4.9 },
+  { id: 4, image: bike4, name: "City Cruiser", price: 120, category: "Child", trending: false, rating: 4.2 },
+  { id: 5, image: bike5, name: "Dirt King", price: 100, category: "Child", trending: true, rating: 4.7 },
+  { id: 6, image: bike6, name: "Vintage Ride", price: 180, category: "Man", trending: false, rating: 4.6 }
 ];
 
 const categories = [
@@ -76,6 +77,8 @@ const Item = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedTime, setSelectedTime] = useState(1);
   const [isStatusOpen, setIsStatusOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [showCart, setShowCart] = useState(false);
 
   const navigate = useNavigate();
 
@@ -99,33 +102,63 @@ const Item = () => {
     return selectedBike.price * selectedTime;
   };
 
-  const handlePay = async () => {
+  const handleAddToCart = () => {
     if (!selectedColor) {
       alert("❗ Please select a color first.");
       return;
     }
 
+    const newCartItem = {
+      id: `${selectedBike.id}-${Date.now()}`,
+      bike: selectedBike,
+      color: selectedColor,
+      duration: selectedTime,
+      price: calculateTotalPrice()
+    };
+
+    setCartItems([...cartItems, newCartItem]);
+    setSelectedBike(null);
+    setSelectedColor("");
+    setSelectedTime(1);
+    setShowCart(true);
+  };
+
+  const handleRemoveFromCart = (itemId) => {
+    setCartItems(cartItems.filter(item => item.id !== itemId));
+  };
+
+  const handlePay = async () => {
+    if (cartItems.length === 0) {
+      alert("❗ Your cart is empty. Please add items first.");
+      return;
+    }
+
     try {
       const res = await axios.post("http://localhost:5000/api/bike/add", {
-        name: selectedBike.name,
-        price: calculateTotalPrice(),
-        color: selectedColor,
-        duration: selectedTime
+        items: cartItems.map(item => ({
+          name: item.bike.name,
+          price: item.price,
+          color: item.color,
+          duration: item.duration
+        }))
       });
 
       if (res.status === 201) {
         navigate("/payment", {
           state: {
-            name: selectedBike.name,
-            price: calculateTotalPrice(),
-            color: selectedColor,
-            duration: selectedTime
+            items: cartItems.map(item => ({
+              name: item.bike.name,
+              price: item.price,
+              color: item.color,
+              duration: item.duration
+            })),
+            total: cartItems.reduce((sum, item) => sum + item.price, 0)
           }
         });
       }
     } catch (error) {
       console.error(error);
-      alert("❌ Could not save selected bike.");
+      alert("❌ Could not process your order.");
     }
   };
 
@@ -155,6 +188,96 @@ const Item = () => {
 
   return (
     <div className="px-4 py-8 bg-gray-50 min-h-screen">
+      {/* Cart Button */}
+      <div className="fixed top-4 right-4 z-50">
+        <button 
+          onClick={() => setShowCart(!showCart)}
+          className="bg-[#67103d] text-white p-3 rounded-full shadow-lg hover:bg-[#500c2e] transition relative"
+        >
+          <FiShoppingCart size={20} />
+          {cartItems.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+              {cartItems.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Cart Sidebar */}
+      {showCart && (
+        <div className="fixed inset-0 z-40 overflow-hidden">
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-50"
+            onClick={() => setShowCart(false)}
+          ></div>
+          <div className="absolute top-0 right-0 bottom-0 w-full max-w-md bg-white shadow-xl transform transition-transform duration-300 ease-in-out">
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-center p-4 border-b">
+                <h2 className="text-xl font-bold">Your Cart ({cartItems.length})</h2>
+                <button 
+                  onClick={() => setShowCart(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <FiXCircle size={20} />
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-4">
+                {cartItems.length === 0 ? (
+                  <div className="text-center py-12">
+                    <p className="text-gray-500">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cartItems.map((item) => (
+                      <div key={item.id} className="flex border-b pb-4">
+                        <div className="w-24 h-24 flex-shrink-0">
+                          <img 
+                            src={item.bike.image} 
+                            alt={item.bike.name} 
+                            className="w-full h-full object-cover rounded"
+                          />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <h3 className="font-semibold">{item.bike.name}</h3>
+                          <p className="text-sm text-gray-500">Color: {item.color}</p>
+                          <p className="text-sm text-gray-500">Duration: {timeOptions.find(t => t.value === item.duration)?.label}</p>
+                          <p className="font-bold text-[#67103d]">Rs. {item.price}</p>
+                        </div>
+                        <button 
+                          onClick={() => handleRemoveFromCart(item.id)}
+                          className="text-gray-400 hover:text-red-500"
+                        >
+                          <FiTrash2 />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="p-4 border-t">
+                <div className="flex justify-between mb-4">
+                  <span className="font-semibold">Total:</span>
+                  <span className="font-bold text-xl text-[#67103d]">
+                    Rs. {cartItems.reduce((sum, item) => sum + item.price, 0)}
+                  </span>
+                </div>
+                <button
+                  onClick={handlePay}
+                  disabled={cartItems.length === 0}
+                  className={`w-full py-3 rounded-lg text-white font-bold transition ${
+                    cartItems.length > 0 ? "bg-[#67103d] hover:bg-[#500c2e]" : "bg-gray-400 cursor-not-allowed"
+                  }`}
+                >
+                  Proceed to Payment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto mb-12 text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-3">Premium Bike Rentals</h1>
@@ -346,7 +469,7 @@ const Item = () => {
       ) : (
         <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="md:flex">
-            <div className="md:w-2/3  md:h-64 relative">
+            <div className="md:w-2/3 md:h-64 relative">
               <img
                 src={selectedBike.image}
                 alt={selectedBike.name}
@@ -421,13 +544,13 @@ const Item = () => {
                   ← Back
                 </button>
                 <button
-                  onClick={handlePay}
+                  onClick={handleAddToCart}
                   disabled={!selectedColor}
                   className={`flex-1 py-2 rounded-lg text-white transition flex items-center justify-center gap-2 ${
                     selectedColor ? "bg-[#67103d] hover:bg-[#500c2e]" : "bg-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  <FiShoppingCart /> Rent Now (Rs. {calculateTotalPrice()})
+                  <FiShoppingCart /> Add to Cart (Rs. {calculateTotalPrice()})
                 </button>
               </div>
             </div>

@@ -24,7 +24,10 @@ const Login = () => {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       const role = data.user.role;
-      if (role === "user") navigate("/Item");
+      if (role === "user") {
+        navigate("/Item");
+        alert("Login successful! Redirecting to items page.");
+      }
       else if (role === "partner") navigate("/PartnerDashboard");
       else if (role === "admin") navigate("/AdminDashboard");
       else alert("Unknown role.");

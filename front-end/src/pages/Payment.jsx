@@ -102,8 +102,7 @@ const PaymentForm = ({ name, price, color }) => {
         cardLast4: cardElement._complete ? "****" : "0000"
       });
   
-      // ✅ Alert on success
-      alert("Payment successful!");
+      
   
       navigate("/paymentsuccess", {
         state: {
@@ -122,9 +121,7 @@ const PaymentForm = ({ name, price, color }) => {
         upiId
       });
   
-      // ✅ Alert on success
-      alert("Payment successful!");
-  
+      
       navigate("/paymentsuccess", {
         state: {
           transactionId: Date.now(),
