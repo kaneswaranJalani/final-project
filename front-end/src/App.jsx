@@ -48,6 +48,7 @@ function App() {
       <Route path="/BicycleTracking" element={<BicycleTracking/>}/>
       <Route path="/PartnerVerification" element={<PartnerVerification/>}/>
       <Route path="/Modal" element={<Modal/>}/>
+    
      </Routes>
     {/* <Footer/> */}
      
