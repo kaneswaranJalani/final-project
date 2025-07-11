@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FiLogIn, FiMail, FiLock, FiUser, FiBriefcase, FiSettings } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "", role: "user" });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,18 +21,20 @@ const Login = () => {
     try {
       const { data } = await axios.post("http://localhost:5000/api/auth/login", form);
 
-      // Save token to localStorage (optional but useful)
       localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      login(data.user); // ✅ ✅ Use context login — this triggers Navbar update
 
       const role = data.user.role;
       if (role === "user") {
         navigate("/Item");
         alert("Login successful! Redirecting to items page.");
+      } else if (role === "partner") {
+        navigate("/PartnerDashboard");
+      } else if (role === "admin") {
+        navigate("/AdminDashboard");
+      } else {
+        alert("Unknown role.");
       }
-      else if (role === "partner") navigate("/PartnerDashboard");
-      else if (role === "admin") navigate("/AdminDashboard");
-      else alert("Unknown role.");
     } catch (err) {
       alert(err.response?.data?.message || "Login failed. Please check your credentials.");
     } finally {

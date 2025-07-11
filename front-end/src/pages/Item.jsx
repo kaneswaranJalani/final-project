@@ -139,9 +139,11 @@ const Item = () => {
           name: item.bike.name,
           price: item.price,
           color: item.color,
-          duration: item.duration
+          duration: item.duration,
+          status : item.status || "pending"
         }))
       });
+      
 
       if (res.status === 201) {
         navigate("/payment", {

@@ -13,27 +13,28 @@ export const getAllBikes = async (req, res) => {
 };
 
 // POST /api/bike/add
-export const createBike = async (req, res) => {
-  try {
-    const { name, price, color, category, status } = req.body;
+// controllers/bikeController.js
 
-    if (!name || !price || !color) {
-      return res.status(400).json({ message: "Missing required fields" });
+export const createBikes = async (req, res) => {
+  try {
+    const { items } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Items array is required" });
     }
 
-    const newBike = new Bike({
-      name,
-      price,
-      color,
-      category,
-      status: status || "Pending",
-    });
+    // Optional: validate fields in each item
+    for (const item of items) {
+      if (!item.name || !item.price || !item.color || !item.duration) {
+        return res.status(400).json({ message: "Missing fields in one or more bikes" });
+      }
+    }
 
-    const savedBike = await newBike.save();
-    res.status(201).json(savedBike);
+    const savedBikes = await Bike.insertMany(items);
+    res.status(201).json(savedBikes);
   } catch (error) {
-    console.error("POST /add error:", error);
-    res.status(500).json({ message: "Failed to create bike", error: error.message });
+    console.error("POST /bike/add error:", error);
+    res.status(500).json({ message: "Failed to create bikes", error: error.message });
   }
 };
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import {
   getAllBikes,
-  createBike,
+  createBikes,
   updateBikeStatus,
   deleteBike
 } from '../controllers/bikeController.js';
@@ -9,7 +9,7 @@ import {
 const router = express.Router();
 
 router.get('/all', getAllBikes);
-router.post('/add', createBike);
+router.post('/add', createBikes);
 router.put('/status/:id', updateBikeStatus);
 router.delete('/:id', deleteBike);
 

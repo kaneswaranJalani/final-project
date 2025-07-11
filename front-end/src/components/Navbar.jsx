@@ -1,14 +1,17 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { gsap } from "gsap";
+import { useAuth } from "../context/AuthContext"; // adjust if needed
 
-function Navbar({ isAuthenticated, setIsAuthenticated }) {
+function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const navbarRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // GSAP animations
+  const { isAuthenticated, logout, loading } = useAuth();
+
   useEffect(() => {
     gsap.fromTo(
       navbarRef.current,
@@ -26,8 +29,8 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
   }, [isOpen]);
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem("userInfo"); // Clear user info from local storage
+    logout();
+    navigate("/login");
   };
 
   return (
@@ -47,21 +50,22 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
           <div className="hidden md:flex items-center space-x-8">
             <NavLink to="/" current={location.pathname === "/"}>Home</NavLink>
             <NavLink to="/item" current={location.pathname === "/item"}>Item</NavLink>
-            {isAuthenticated ? (
-              <Link
-                to="/"
-                onClick={handleLogout}
-                className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-              >
-                Logout
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-              >
-                Login
-              </Link>
+            {!loading && (
+              isAuthenticated ? (
+                <button
+                  onClick={handleLogout}
+                  className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  Login
+                </Link>
+              )
             )}
           </div>
 
@@ -109,25 +113,26 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
             <MobileNavLink to="/item" onClick={() => setIsOpen(false)} current={location.pathname === "/item"}>
               Item
             </MobileNavLink>
-            {isAuthenticated ? (
-              <Link
-                to="/"
-                onClick={() => {
-                  handleLogout();
-                  setIsOpen(false);
-                }}
-                className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
-              >
-                Logout
-              </Link>
-            ) : (
-              <Link
-                to="/login"
-                onClick={() => setIsOpen(false)}
-                className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
-              >
-                Login
-              </Link>
+            {!loading && (
+              isAuthenticated ? (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsOpen(false);
+                  }}
+                  className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
+                >
+                  Logout
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="block text-center bg-white text-[#67103d] hover:bg-gray-100 px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 mx-4 shadow-md"
+                >
+                  Login
+                </Link>
+              )
             )}
           </div>
         </div>
@@ -136,7 +141,7 @@ function Navbar({ isAuthenticated, setIsAuthenticated }) {
   );
 }
 
-// Reusable NavLink component for desktop
+// Desktop NavLink
 const NavLink = ({ to, children, current }) => (
   <Link
     to={to}
@@ -148,7 +153,7 @@ const NavLink = ({ to, children, current }) => (
   </Link>
 );
 
-// Reusable NavLink component for mobile
+// Mobile NavLink
 const MobileNavLink = ({ to, children, onClick, current }) => (
   <Link
     to={to}

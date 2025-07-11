@@ -5,8 +5,8 @@ const bikeSchema = new mongoose.Schema(
     name: { type: String, required: true },
     price: { type: Number, required: true },
     color: { type: String, required: true },
-    category: { type: String },
-    status: { type: String, default: 'Pending' }
+    status: { type: String, default: 'Pending' },
+    duration : { type: Number, required: true }
   },
   { timestamps: true }
 );

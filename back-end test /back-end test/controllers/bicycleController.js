@@ -1,17 +1,25 @@
-import Bicycle from "../models/bicycle.js";
+import Bicycle from "../models/Bicycle.js";
 
-// Add a bicycle
+// ✅ Add a bicycle (Authenticated Partner Only or Explicit partnerId)
 export const addBicycle = async (req, res) => {
   try {
-    const { partnerId, type, model, price, stock } = req.body;
+    const partnerId = req.partner?._id || req.body.partnerId;
+
+    if (!partnerId) {
+      return res.status(400).json({ message: "Partner ID is required" });
+    }
+
+    const { type, model, price, stock, status } = req.body;
     const newBicycle = new Bicycle({
-      partnerId,
+      partner: partnerId,
       type,
       model,
       price,
       stock,
-      lastUpdate: new Date().toLocaleDateString(),
+      status: status || "available",
+      lastUpdate: new Date(),
     });
+
     await newBicycle.save();
     res.status(201).json(newBicycle);
   } catch (err) {
@@ -19,44 +27,74 @@ export const addBicycle = async (req, res) => {
   }
 };
 
-// Get all bicycles for a partner
+// ✅ Get all bicycles for logged-in partner or given partnerId
 export const getBicyclesByPartner = async (req, res) => {
   try {
-    const { partnerId } = req.params;
-    const bikes = await Bicycle.find({ partnerId });
-    res.status(200).json(bikes);
+    const partnerId = req.partner?._id || req.params.partnerId;
+
+    if (!partnerId) {
+      return res.status(400).json({ message: "Partner ID is required" });
+    }
+
+    const bicycles = await Bicycle.find({ partner: partnerId });
+    res.status(200).json(bicycles);
   } catch (err) {
     res.status(500).json({ message: "Error fetching bicycles", error: err.message });
   }
 };
 
-// Delete a bicycle
+// ✅ Update a bicycle (only for logged-in partner)
+export const updateBicycle = async (req, res) => {
+  try {
+    const partnerId = req.partner?._id;
+    const { id } = req.params;
+
+    const bicycle = await Bicycle.findOne({ _id: id, partner: partnerId });
+    if (!bicycle) return res.status(404).json({ message: "Bicycle not found" });
+
+    Object.assign(bicycle, req.body, { lastUpdate: new Date() });
+    await bicycle.save();
+
+    res.status(200).json(bicycle);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update bicycle", error: err.message });
+  }
+};
+
+// ✅ Delete a bicycle (only for logged-in partner)
 export const deleteBicycle = async (req, res) => {
   try {
+    const partnerId = req.partner?._id;
     const { id } = req.params;
-    await Bicycle.findByIdAndDelete(id);
+
+    const bicycle = await Bicycle.findOneAndDelete({ _id: id, partner: partnerId });
+    if (!bicycle) return res.status(404).json({ message: "Bicycle not found" });
+
     res.status(200).json({ message: "Bicycle deleted successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error deleting bicycle", error: err.message });
   }
 };
 
-// Submit all partner + bicycles (if needed in one request)
+// ✅ Submit partner + bicycles in one request (useful for registration)
 export const submitPartnerData = async (req, res) => {
   try {
     const { partner, bicycles } = req.body;
 
-    // Save bicycles
+    if (!partner || !bicycles || !Array.isArray(bicycles)) {
+      return res.status(400).json({ message: "Partner and bicycles data required" });
+    }
+
     const savedBicycles = await Promise.all(
       bicycles.map((bike) => {
         const newBike = new Bicycle({
-          partnerId: partner._id,
+          partner: partner._id,
           type: bike.type,
           model: bike.model,
           price: bike.price,
           stock: bike.stock,
-          status: bike.status,
-          lastUpdate: bike.lastUpdate,
+          status: bike.status || "available",
+          lastUpdate: bike.lastUpdate || new Date(),
         });
         return newBike.save();
       })

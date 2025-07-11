@@ -3,13 +3,18 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+console.log("stripe", stripe);
 
 export const createPaymentIntent = async (req, res) => {
-  const { amount, currency = "usd" } = req.body;
-
   try {
+    const { amount, currency = "inr" } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      amount: Math.round(amount * 100), // ✅ convert to paisa/cents
       currency,
     });
 

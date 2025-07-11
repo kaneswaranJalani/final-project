@@ -97,3 +97,58 @@
 //     next(err);
 //   }
 // };
+import Payment from "../models/payment.js";
+
+// Save a new payment
+export const savePayment = async (req, res) => {
+  try {
+    const { bikeName, amount, color, status } = req.body;
+    const newPayment = new Payment({
+      bikeName,
+      amount,
+      color,
+      status: status || "Paid",
+    });
+    await newPayment.save();
+    res.status(201).json(newPayment);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to save payment" });
+  }
+};
+
+// Get all payments
+export const getAllPayments = async (req, res) => {
+  try {
+    const payments = await Payment.find();
+    res.json(payments);
+  } catch {
+    res.status(500).json({ message: "Failed to fetch payments" });
+  }
+};
+
+// Update payment status
+export const updatePaymentStatus = async (req, res) => {
+  try {
+    const updated = await Payment.findByIdAndUpdate(
+      req.params.id,
+      { status: req.body.status },
+      { new: true }
+    );
+    res.json(updated);
+  } catch {
+    res.status(500).json({ message: "Failed to update payment status" });
+  }
+};
+
+// Delete a payment
+export const deletePayment = async (req, res) => {
+  try {
+    const deleted = await Payment.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Payment not found" });
+    }
+    res.json({ message: "Payment deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete payment" });
+  }
+};

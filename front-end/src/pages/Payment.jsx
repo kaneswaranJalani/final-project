@@ -5,31 +5,25 @@ import {
   CardElement,
   useStripe,
   useElements,
-  Elements
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-
 import {
-  FiCreditCard,
-  FiDollarSign,
-  FiCheckCircle,
-  FiClock,
-  FiLock,
-  FiUser,
-  FiCalendar,
-  FiShield
+  FiCreditCard, FiDollarSign, FiCheckCircle, FiClock,
+  FiLock, FiShield
 } from "react-icons/fi";
-import { FaCcVisa, FaCcMastercard, FaGooglePay } from "react-icons/fa";
-import { SiPhonepe } from "react-icons/si";
 
-// Load Stripe outside the component for best performance
-const stripe = import.meta.env.VITE_STRIPE_PUBLIC_KEY
-const stripePromise = loadStripe(stripe);
-
-const PaymentForm = ({ name, price, color }) => {
+// Main component
+const Payment = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
+
+  // Read passed data from route state
+  const [bikeData, setBikeData] = useState({
+    name: "",
+    price: "",
+    color: ""
+  });
 
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [upiId, setUpiId] = useState("");
@@ -37,31 +31,54 @@ const PaymentForm = ({ name, price, color }) => {
   const [clientSecret, setClientSecret] = useState("");
   const [timer, setTimer] = useState(300);
 
+  // Handle missing or invalid state
+  useEffect(() => {
+    if (!location.state?.name || !location.state?.price || !location.state?.color) {
+      console.warn("Missing payment state. Redirecting to sample...");
+      navigate("/payment", {
+        replace: true,
+        state: {
+          name: "Mountain Bike",
+          price: 1200,
+          color: "red",
+        },
+      });
+    } else {
+      setBikeData({
+        name: location.state.name,
+        price: location.state.price,
+        color: location.state.color
+      });
+    }
+  }, [location.state]);
+
+  const { name, price, color } = bikeData;
+
   // Countdown timer
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer(prev => prev > 0 ? prev - 1 : 0);
+      setTimer((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch Stripe clientSecret
+  // Fetch Stripe client secret
   useEffect(() => {
     const fetchClientSecret = async () => {
+      if (!price) return;
       try {
         const res = await axios.post("http://localhost:5000/api/stripe/create-payment-intent", {
-          amount: price
+          amount: price * 100,
+          currency: "inr",
         });
         setClientSecret(res.data.clientSecret);
-      } catch (error) {
-        console.error("Stripe Init Error:", error);
-        alert("Error initializing payment. Try again.");
+      } catch (err) {
+        console.error("Stripe Init Error:", err);
+        alert("Error initializing payment.");
       }
     };
 
-    if (paymentMethod === "card") {
-      fetchClientSecret();
-    }
+    if (paymentMethod === "card") fetchClientSecret();
   }, [price, paymentMethod]);
 
   const formatTime = (seconds) => {
@@ -70,70 +87,88 @@ const PaymentForm = ({ name, price, color }) => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
+  // Handle card or UPI payment
   const handlePayment = async () => {
     setIsProcessing(true);
-  
+
     if (paymentMethod === "card") {
-      if (!stripe || !elements) return;
-  
-      const cardElement = elements.getElement(CardElement);
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: "Test User" // Optional
-          }
-        }
-      });
-  
-      if (error) {
-        console.error(error);
-        alert("Payment failed");
+      if (!stripe || !elements) {
+        alert("Stripe not ready");
         setIsProcessing(false);
         return;
       }
-  
-      // Save payment to your backend
-      await axios.post("http://localhost:5000/api/payments/save", {
-        bikeName: name,
-        amount: price,
-        color,
-        paymentMethod: "card",
-        cardLast4: cardElement._complete ? "****" : "0000"
-      });
-  
-      
-  
-      navigate("/paymentsuccess", {
-        state: {
-          transactionId: paymentIntent.id,
-          amount: price,
-          bikeName: name
+
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        alert("Card element not found");
+        setIsProcessing(false);
+        return;
+      }
+
+      try {
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: { name: "Test User" },
+          },
+        });
+
+        if (error) {
+          alert("Payment failed: " + error.message);
+          setIsProcessing(false);
+          return;
         }
-      });
-  
+
+        await axios.post("http://localhost:5000/api/payments/save", {
+          bikeName: name,
+          amount: price,
+          color,
+          paymentMethod: "card",
+          cardLast4: "****",
+        });
+
+        navigate("/paymentsuccess", {
+          state: {
+            transactionId: paymentIntent.id,
+            amount: price,
+            bikeName: name,
+          },
+        });
+      } catch (err) {
+        console.error(err);
+        alert("Error processing payment.");
+      }
     } else if (paymentMethod === "upi") {
-      await axios.post("http://localhost:5000/api/payments/save", {
-        bikeName: name,
-        amount: price,
-        color,
-        paymentMethod: "upi",
-        upiId
-      });
-  
-      
-      navigate("/paymentsuccess", {
-        state: {
-          transactionId: Date.now(),
+      if (!upiId) {
+        alert("Enter a valid UPI ID");
+        setIsProcessing(false);
+        return;
+      }
+
+      try {
+        await axios.post("http://localhost:5000/api/payments/save", {
+          bikeName: name,
           amount: price,
-          bikeName: name
-        }
-      });
+          color,
+          paymentMethod: "upi",
+          upiId,
+        });
+
+        navigate("/paymentsuccess", {
+          state: {
+            transactionId: Date.now().toString(),
+            amount: price,
+            bikeName: name,
+          },
+        });
+      } catch (err) {
+        console.error(err);
+        alert("UPI Payment failed.");
+      }
     }
-  
+
     setIsProcessing(false);
   };
-  
 
   return (
     <div className="min-h-screen bg-[#f9f5f7] py-12 px-4">
@@ -144,6 +179,7 @@ const PaymentForm = ({ name, price, color }) => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
+          {/* Order Summary */}
           <div className="lg:w-2/5">
             <div className="bg-white rounded-2xl shadow-sm p-6 border border-[#e8d8e1]">
               <h2 className="text-xl font-semibold text-[#67103d] mb-4 flex items-center gap-2">
@@ -158,10 +194,6 @@ const PaymentForm = ({ name, price, color }) => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Color</span>
                   <span className="font-medium text-[#4c092b] capitalize">{color}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Duration</span>
-                  <span className="font-medium text-[#4c092b]">1 Day Rental</span>
                 </div>
               </div>
 
@@ -180,6 +212,7 @@ const PaymentForm = ({ name, price, color }) => {
               </div>
             </div>
 
+            {/* Payment Method Selector */}
             <div className="mt-6 bg-white rounded-2xl shadow-sm p-6 border border-[#e8d8e1]">
               <h2 className="text-xl font-semibold text-[#67103d] mb-4">Payment Options</h2>
               <div className="space-y-3">
@@ -218,6 +251,7 @@ const PaymentForm = ({ name, price, color }) => {
             </div>
           </div>
 
+          {/* Payment Form */}
           <div className="lg:w-3/5">
             <div className="bg-white rounded-2xl shadow-sm p-6 border border-[#e8d8e1]">
               {paymentMethod === "card" ? (
@@ -231,13 +265,9 @@ const PaymentForm = ({ name, price, color }) => {
                         base: {
                           fontSize: "16px",
                           color: "#4c092b",
-                          "::placeholder": {
-                            color: "#a87b96"
-                          }
+                          "::placeholder": { color: "#a87b96" }
                         },
-                        invalid: {
-                          color: "#ff4b4b"
-                        }
+                        invalid: { color: "#ff4b4b" }
                       }
                     }} />
                   </div>
@@ -278,23 +308,8 @@ const PaymentForm = ({ name, price, color }) => {
             </div>
           </div>
         </div>
-      </div>
+      </div>  
     </div>
-  );
-};
-
-const Payment = () => {
-  const location = useLocation();
-  const { name, price, color } = location.state || {};
-
-  if (!name || !price || !color) {
-    return <div className="text-center py-24 text-red-600 text-xl">Missing bike details.</div>;
-  }
-
-  return (
-    <Elements stripe={stripePromise}>
-      <PaymentForm name={name} price={price} color={color} />
-    </Elements>
   );
 };
 
