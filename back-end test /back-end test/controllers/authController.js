@@ -3,7 +3,7 @@ import Partner from "../models/Partner.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = "your_jwt_secret"; // In production, move this to .env
+const JWT_SECRET = "your_jwt_secret"; 
 
 // ✅ Register - User
 export const registerUser = async (req, res) => {
@@ -152,13 +152,29 @@ export const registerPartner = async (req, res) => {
 //   }
 // };
 
+
+
+
+
 export const login = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    const { email, password } = req.body;
 
-    const account = await User.findOne({ email, role }); // Include role in search
+    let account = await User.findOne({ email });
+    let role = null;
+
+    if (account) {
+      role = account.role; // 'user' or 'admin'
+    } else {
+      account = await Partner.findOne({ email });
+      if (account) role = "partner";
+    }
 
     if (!account) return res.status(404).json({ message: "Account not found" });
+
+    if (role === "partner" && !account.verified) {
+      return res.status(403).json({ message: "Your account is not verified by admin yet." });
+    }
 
     const isMatch = await bcrypt.compare(password, account.password);
     if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
@@ -172,14 +188,36 @@ export const login = async (req, res) => {
         id: account._id,
         name: account.name,
         email: account.email,
-        role: account.role,
-      }
+        role,
+        ...(role === "admin" && {
+          admin: true, // Optional: helps frontend with privileges
+        }),
+        ...(role === "partner" && {
+          phone: account.phone,
+          nic: account.nic,
+          address: account.address,
+          businessName: account.businessName,
+          businessType: account.businessType,
+          yearsInBusiness: account.yearsInBusiness,
+          rentalArea: account.rentalArea,
+          additionalDetails: account.additionalDetails,
+          partnerTier: account.partnerTier,
+        }),
+        ...(role === "user" && {
+          primaryPhone: account.primaryPhone,
+          secondaryPhone: account.secondaryPhone,
+          address: account.address,
+          idProof: account.idProof,
+          rentalPreferences: account.rentalPreferences,
+        }),
+      },
     });
 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 
 

@@ -6,10 +6,11 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/authRoutes.js';
-import bicycle from './models/bicycle.js';
+import bicycleRoutes from './routes/bicycleRoutes.js'; // Import bicycle routes
 import bikeRoutes from './routes/bikeRoutes.js'; // Import bicycle routes
 import paymentRoutes from './routes/paymentRoutes.js';
 import stripeRoutes from './routes/stripeRoutes.js';
+import adminRoutes from './routes/adminRoutes.js'; // Import admin routes
 
 dotenv.config();
 
@@ -22,10 +23,11 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes); 
-app.use('/api/bicycles', bicycle); // Assuming you have a bicycle model and routes
+app.use('/api/bicycles', bicycleRoutes); // Assuming you have a bicycle model and routes
 app.use('/api/bike', bikeRoutes); // Bicycle selection routes
 app.use('/api/payments', paymentRoutes); // Payment routes
 app.use('/api/stripe', stripeRoutes);
+app.use('/api/admin', adminRoutes); // Admin routes
 
 
 

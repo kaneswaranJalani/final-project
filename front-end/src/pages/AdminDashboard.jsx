@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingCart,
@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [partners, setPartners] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'payment') fetchPayments();
+    if (activeTab === 'partners') fetchPartners();
   }, [activeTab]);
 
   // Fetch dashboard aggregate data
@@ -48,6 +50,7 @@ const AdminDashboard = () => {
       setUsers(usersRes.data);
       setOrders(ordersRes.data);
       setPayments(paymentsRes.data);
+      setPartners([]);
       
       // Calculate total revenue correctly
       const totalRevenue = paymentsRes.data.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
@@ -133,10 +136,12 @@ const AdminDashboard = () => {
   const fetchPartners = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/partners/pending');
+      const res = await axios.get('http://localhost:5000/api/admin/partners/pending');
+      console.log("Fetched partners:", res.data);
       setPartners(res.data);
       setError(null);
-    } catch {
+    } catch (err) {
+      console.error("Partners fetch error:", err);
       setError('Failed to load partners');
     } finally {
       setLoading(false);
@@ -146,9 +151,10 @@ const AdminDashboard = () => {
   //Update partner status
   const updatePartnerStatus = async (partnerId, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/partners/${partnerId}/status`, { status });
+      await axios.put(`http://localhost:5000/api/admin/partners/verify/${partnerId}`, { status }); 
       setPartners(prev => prev.filter(p => p._id !== partnerId));
     } catch (err) {
+      console.error("Partner status update error:", err);
       alert("Failed to update partner status");
     }
   };
@@ -513,70 +519,6 @@ const AdminDashboard = () => {
                               </td>
                             </>
                           )}
-                          {/* Partner Approval Tab */}
-        {activeTab === 'partners' && (
-          <section className="p-6">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-800">Partner Requests</h2>
-                <button 
-                  onClick={fetchPartners}
-                  className="flex items-center text-sm text-[#67103d] hover:text-[#50052c]"
-                >
-                  <FiRefreshCw className="mr-1" size={14} /> Refresh
-                </button>
-              </div>
-              {loading ? (
-                <div className="p-8 text-center text-gray-500">Loading...</div>
-              ) : error ? (
-                <div className="p-8 text-center text-red-500">{error}</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Business</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                      {partners.map((partner) => (
-                        <tr key={partner._id}>
-                          <td className="px-6 py-4 text-sm font-medium text-gray-900">{partner.name}</td>
-                          <td className="px-6 py-4 text-sm text-gray-500">{partner.email}</td>
-                          <td className="px-6 py-4 text-sm text-gray-500">{partner.phone}</td>
-                          <td className="px-6 py-4 text-sm text-gray-500">{partner.businessName}</td>
-                          <td className="px-6 py-4 text-sm">
-                            <button
-                              onClick={() => updatePartnerStatus(partner._id, 'approved')}
-                              className="bg-green-500 text-white px-3 py-1 rounded mr-2 hover:bg-green-600"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => updatePartnerStatus(partner._id, 'rejected')}
-                              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                            >
-                              Reject
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      {partners.length === 0 && (
-                        <tr>
-                          <td colSpan="5" className="text-center py-6 text-gray-400">No partner requests found.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
                         </tr>
                       ))}
                     </tbody>
@@ -586,6 +528,74 @@ const AdminDashboard = () => {
             </div>
           )}
         </section>
+        {activeTab === 'partners' && (
+        <section className="p-6 w-full">
+          <div className="bg-white rounded-xl shadow-md border border-gray-200">
+            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
+              <h2 className="text-xl font-semibold text-gray-800">Pending Partner Requests</h2>
+              <button
+                onClick={fetchPartners}
+                className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
+              >
+                <FiRefreshCw size={16} /> Refresh
+              </button>
+            </div>
+
+            {loading ? (
+              <div className="p-8 text-center text-gray-500">Loading...</div>
+            ) : error ? (
+              <div className="p-8 text-center text-red-500">{error}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-[#f9fafb] text-gray-600 text-xs uppercase">
+                    <tr>
+                      {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
+                        <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {partners.map((partner) => (
+                      <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                        <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                        <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                        <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                        <td className="px-4 py-2 whitespace-nowrap">
+                          <button
+                            onClick={() => updatePartnerStatus(partner._id, 'approved')}
+                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => updatePartnerStatus(partner._id, 'rejected')}
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                          >
+                            Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {partners.length === 0 && (
+                      <tr>
+                        <td colSpan="11" className="text-center py-6 text-gray-400">No partner requests found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </section>
+)}
       </main>
     </div>
   );

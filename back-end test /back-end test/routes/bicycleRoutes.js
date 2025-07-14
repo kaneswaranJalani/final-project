@@ -1,17 +1,23 @@
 import express from 'express';
 import {
-  getPartnerBicycles,
   addBicycle,
+  getBicyclesByPartner,
+  deleteBicycle,
   updateBicycle,
-  deleteBicycle
 } from '../controllers/bicycleController.js';
-import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', protect, getPartnerBicycles);
-router.post('/', protect, addBicycle);
-router.put('/:id', protect, updateBicycle);
-router.delete('/:id', protect, deleteBicycle);
+// POST - Add Bicycle
+router.post('/', addBicycle);
+
+// GET - Get Bicycles for a Partner
+router.get('/partner/:partnerId', getBicyclesByPartner);
+
+// DELETE - Delete Bicycle
+router.delete('/:id', deleteBicycle);
+
+// PUT - Update Bicycle
+router.put('/:id', updateBicycle);
 
 export default router;

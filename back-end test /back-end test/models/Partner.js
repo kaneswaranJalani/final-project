@@ -13,10 +13,11 @@ const partnerSchema = new mongoose.Schema({
   rentalArea: { type: String },
   additionalDetails: { type: String },
   partnerTier: { type: String },
-
+  verified: { type: Boolean, default: false },
+  statusReason: { type: String, default: "Pending approval" },
   role: { type: String, default: "partner" },
 }, { timestamps: true });
 
 // ✅ Correct model name and schema
-const User = mongoose.models.User || mongoose.model("User", userSchema);
-export default User;
+const Partner = mongoose.models.Partner || mongoose.model("Partner", partnerSchema);
+export default Partner;

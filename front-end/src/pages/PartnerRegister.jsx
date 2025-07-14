@@ -33,7 +33,7 @@ const PartnerRegister = () => {
     try {
       const res = await axios.post("http://localhost:5000/api/auth/register/partner", form);
       alert(res.data.message);
-      navigate("/PartnerProfile", { state: { partnerData: form } }); 
+      navigate("/Login", { state: { partnerData: form } }); 
       alert("Registration successful! Please check your email for verification.");
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
@@ -162,6 +162,6 @@ const PartnerRegister = () => {
       </div>
     </div>
   );
-};
+}
 
 export default PartnerRegister;
