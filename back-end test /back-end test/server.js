@@ -12,6 +12,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import stripeRoutes from './routes/stripeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js'; // Import admin routes
 import partnerRoutes from './routes/partnerRoutes.js'; // Import partner routes
+import uploadRoute from './routes/upload.js'; // Import upload routes
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use('/api/payments', paymentRoutes); // Payment routes
 app.use('/api/stripe', stripeRoutes);
 app.use('/api/admin', adminRoutes); // Admin routes
 app.use('/api/partners', partnerRoutes); // Partner routes
+app.use('/api/upload', uploadRoute);
 
 
 
