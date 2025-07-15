@@ -35,6 +35,27 @@ const PartnerDashboard = () => {
     partnerTier: 'Gold',
     additionalDetails: 'Experienced partner for 3+ years'
   });
+  
+
+  useEffect(() => {
+    const fetchPartner = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/partners/${partnerId}`);
+        setProfileData({
+          name: res.data.name,
+          email: res.data.email,
+          phone: res.data.phone,
+          address: res.data.address,
+          partnerTier: res.data.partnerTier,
+          additionalDetails: res.data.additionalDetails
+        });
+      } catch (err) {
+        console.error('Error fetching partner data:', err);
+      }
+    };
+    fetchPartner();
+  }, [partnerId]);
+  
 
   const fetchBicycles = async () => {
     try {
@@ -190,7 +211,7 @@ const PartnerDashboard = () => {
                     </div>
                     
                     <div className="mt-8 bg-[#f9f0f5] p-4 rounded-lg">
-                      <h4 className="font-medium text-[#67103d]">Partner Stats</h4>
+                      <h4 className="font-medium text-[#67103d]">Partner Status</h4>
                       <div className="grid grid-cols-3 gap-4 mt-3">
                         <div className="bg-white p-3 rounded-lg shadow-xs text-center">
                           <p className="text-2xl font-bold text-[#67103d]">{bicycles.length}</p>

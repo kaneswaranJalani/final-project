@@ -1,14 +1,11 @@
- import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingCart,
   FiBell, FiSearch, FiMenu, FiUser, FiDollarSign, FiShoppingBag, 
   FiChevronDown, FiTrash2, FiEdit, FiRefreshCw
 } from 'react-icons/fi';
-import { Bar, Pie, Line } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
 import { RiUserStarLine } from "react-icons/ri";
-Chart.register(...registerables);
 
 const AdminDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -159,60 +156,12 @@ const AdminDashboard = () => {
     }
   };
 
-  // You can add similar handlers for orders and payments if needed
-
-  // Chart data configurations (same as you provided)
-  const userGrowthData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    datasets: [
-      {
-        label: 'New Users',
-        data: [15, 29, 32, 41, 56, 72, 89],
-        backgroundColor: 'rgba(103, 16, 61, 0.8)',
-        borderColor: 'rgba(103, 16, 61, 1)',
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const orderStatusData = {
-    labels: ['Completed', 'Pending', 'Cancelled'],
-    datasets: [
-      {
-        data: [65, 15, 20],
-        backgroundColor: [
-          'rgba(103, 16, 61, 0.8)',
-          'rgba(255, 193, 7, 0.8)',
-          'rgba(220, 53, 69, 0.8)'
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const revenueData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-    datasets: [
-      {
-        label: 'Revenue (Rs.)',
-        data: [12500, 19000, 15000, 21000, 25000, 23000, 28000],
-        fill: true,
-        backgroundColor: 'rgba(103, 16, 61, 0.2)',
-        borderColor: 'rgba(103, 16, 61, 1)',
-        tension: 0.4,
-      },
-    ],
-  };
-
   const menuItems = [
     { icon: <FiHome />, name: 'Dashboard', key: 'dashboard' },
     { icon: <FiUsers />, name: 'Users', key: 'users' },
     { icon: <FiShoppingCart />, name: 'Orders', key: 'orders' },
     { icon: <FiPieChart />, name: 'Payments', key: 'payment' },
-    { icon: <RiUserStarLine/>, name: 'Partners', key: 'partners' },
-    { icon: <FiSettings />, name: 'Settings', key: 'settings' }
-    
-
+    { icon: <RiUserStarLine/>, name: 'Partners', key: 'partners' }
   ];
 
   return (
@@ -338,70 +287,11 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              {/* Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">User Growth</h3>
-                  <div className="h-64">
-                    <Bar 
-                      data={userGrowthData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            position: 'top',
-                          },
-                        },
-                        scales: {
-                          y: {
-                            beginAtZero: true
-                          }
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Order Status</h3>
-                  <div className="h-64">
-                    <Pie 
-                      data={orderStatusData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            position: 'right',
-                          },
-                        },
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Revenue Overview</h3>
-                  <div className="h-80">
-                    <Line 
-                      data={revenueData}
-                      options={{
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                          legend: {
-                            position: 'top',
-                          },
-                        },
-                        scales: {
-                          y: {
-                            beginAtZero: true
-                          }
-                        }
-                      }}
-                    />
-                  </div>
+              {/* Empty space where charts were removed */}
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Dashboard Analytics</h3>
+                <div className="text-center py-12 text-gray-400">
+                  Analytics data will be displayed here
                 </div>
               </div>
             </div>
@@ -498,7 +388,6 @@ const AdminDashboard = () => {
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.price}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {/* You can add order actions here */}
                                 <button className="text-[#67103d] hover:text-[#50052c]" title="Edit order">
                                   <FiEdit />
                                 </button>
@@ -512,7 +401,6 @@ const AdminDashboard = () => {
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.amount}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {/* You can add payment actions here */}
                                 <button className="text-[#67103d] hover:text-[#50052c]" title="Edit payment">
                                   <FiEdit />
                                 </button>
@@ -527,75 +415,75 @@ const AdminDashboard = () => {
               )}
             </div>
           )}
-        </section>
-        {activeTab === 'partners' && (
-        <section className="p-6 w-full">
-          <div className="bg-white rounded-xl shadow-md border border-gray-200">
-            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
-              <h2 className="text-xl font-semibold text-gray-800">Pending Partner Requests</h2>
-              <button
-                onClick={fetchPartners}
-                className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
-              >
-                <FiRefreshCw size={16} /> Refresh
-              </button>
-            </div>
 
-            {loading ? (
-              <div className="p-8 text-center text-gray-500">Loading...</div>
-            ) : error ? (
-              <div className="p-8 text-center text-red-500">{error}</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-[#f9fafb] text-gray-600 text-xs uppercase">
-                    <tr>
-                      {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
-                        <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-100">
-                    {partners.map((partner) => (
-                      <tr key={partner._id} className="hover:bg-gray-50 text-sm">
-                        <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.email}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
-                        <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
-                        <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
-                        <td className="px-4 py-2 whitespace-nowrap">
-                          <button
-                            onClick={() => updatePartnerStatus(partner._id, 'approved')}
-                            className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => updatePartnerStatus(partner._id, 'rejected')}
-                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
-                          >
-                            Reject
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                    {partners.length === 0 && (
-                      <tr>
-                        <td colSpan="11" className="text-center py-6 text-gray-400">No partner requests found.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+          {/* Partners Section */}
+          {activeTab === 'partners' && (
+            <div className="bg-white rounded-xl shadow-md border border-gray-200">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-800">Pending Partner Requests</h2>
+                <button
+                  onClick={fetchPartners}
+                  className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
+                >
+                  <FiRefreshCw size={16} /> Refresh
+                </button>
               </div>
-            )}
-          </div>
+
+              {loading ? (
+                <div className="p-8 text-center text-gray-500">Loading...</div>
+              ) : error ? (
+                <div className="p-8 text-center text-red-500">{error}</div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-[#f9fafb] text-gray-600 text-xs uppercase">
+                      <tr>
+                        {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
+                          <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-100">
+                      {partners.map((partner) => (
+                        <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                          <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                          <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                          <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                          <td className="px-4 py-2 whitespace-nowrap">
+                            <button
+                              onClick={() => updatePartnerStatus(partner._id, 'approved')}
+                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
+                            >
+                              Approve
+                            </button>
+                            <button
+                              onClick={() => updatePartnerStatus(partner._id, 'rejected')}
+                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      {partners.length === 0 && (
+                        <tr>
+                          <td colSpan="11" className="text-center py-6 text-gray-400">No partner requests found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
         </section>
-)}
       </main>
     </div>
   );
