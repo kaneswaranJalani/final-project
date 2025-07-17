@@ -37,12 +37,12 @@ const PaymentSuccess = () => {
 
         {/* Actions */}
         <div className="mt-8 flex flex-col items-center space-y-3">
-          <button
+          {/* <button
             onClick={handleFeedback}
             className="inline-block px-6 py-2 rounded-full bg-[#67103d] text-white font-semibold shadow hover:bg-[#50052c] transition"
           >
             ✍️ Give Feedback
-          </button>
+          </button> */}
           <button
             onClick={handleCancel}
             className="text-sm text-gray-600 hover:underline hover:text-[#67103d] transition"

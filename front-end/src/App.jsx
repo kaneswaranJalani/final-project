@@ -23,6 +23,7 @@ import PartnerDashboard from "./pages/PartnerDashboard";
 import BicycleTracking from "./pages/BicycleTracking";
 import PartnerVerification from "./pages/PartnerVerification";
 import Modal from "./pages/ModalForm";
+import RentalHistory from "./pages/RentalHistory";
 // import CartPage from "./pages/CartPage";
 
 // ✅ Load Stripe public key (replace with your own test/public key)
@@ -64,6 +65,7 @@ function App() {
         <Route path="/BicycleTracking" element={<BicycleTracking />} />
         <Route path="/PartnerVerification" element={<PartnerVerification />} />
         <Route path="/Modal" element={<Modal />} />
+        <Route path="/RentalHistory" element={<RentalHistory />} />
         {/* <Route path="/CartPage" element={<CartPage />} /> */}
       </Routes>
     </>

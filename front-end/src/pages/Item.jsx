@@ -13,7 +13,9 @@ import {
   FiStar,
   FiArrowRight,
   FiArrowLeft,
-  FiTrash2
+  FiTrash2,
+  FiBook
+
 } from "react-icons/fi";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css"; 
@@ -282,11 +284,21 @@ const Item = () => {
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto mb-12 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-3">Premium Bike Rentals</h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Explore our collection of high-performance bikes for your next adventure
-        </p>
-      </div>
+  <h1 className="text-4xl font-bold text-gray-900 mb-3">Premium Bike Rentals</h1>
+  <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+    Explore our collection of high-performance bikes for your next adventure
+  </p>
+  <div className="flex justify-center mt-6">
+    <button
+      onClick={() => navigate("/RentalHistory")}
+      className="flex items-center gap-2 px-4 py-2 bg-[#67103d] text-white rounded-full hover:bg-[#500c2e] transition"
+    >
+      <FiBook />
+      View Rental History
+    </button>
+  </div>
+</div>
+
 
       {/* Trending Section */}
       {trendingBikes.length > 0 && (
