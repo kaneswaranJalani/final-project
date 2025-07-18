@@ -163,6 +163,7 @@ const AdminDashboard = () => {
     { icon: <FiPieChart />, name: 'Payments', key: 'payment' },
     { icon: <RiUserStarLine/>, name: 'Partners', key: 'partners' }
   ];
+  
 
   return (
     <div className="flex h-screen font-sans bg-gray-50">
