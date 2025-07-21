@@ -13,7 +13,8 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [payments, setPayments] = useState([]);
-  const [partners, setPartners] = useState([]);
+  const [partnersPending, setPartnersPending] = useState([]);
+  const [partnersAll, setPartnersAll] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
@@ -31,7 +32,10 @@ const AdminDashboard = () => {
     if (activeTab === 'users') fetchUsers();
     if (activeTab === 'orders') fetchOrders();
     if (activeTab === 'payment') fetchPayments();
-    if (activeTab === 'partners') fetchPartners();
+    if (activeTab === 'partners') {
+      fetchPartnersPending();
+      fetchPartnersAll();
+    }
   }, [activeTab]);
 
   // Fetch dashboard aggregate data
@@ -42,14 +46,15 @@ const AdminDashboard = () => {
         axios.get('http://localhost:5000/api/auth/all'),
         axios.get('http://localhost:5000/api/bike/all'),
         axios.get('http://localhost:5000/api/payments/all')
+      
       ]);
       
       setUsers(usersRes.data);
       setOrders(ordersRes.data);
       setPayments(paymentsRes.data);
-      setPartners([]);
+      setPartnersPending([]);
+      setPartnersAll([]);
       
-      // Calculate total revenue correctly
       const totalRevenue = paymentsRes.data.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
       setStats({
         totalUsers: usersRes.data.length,
@@ -66,7 +71,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch users for users tab
   const fetchUsers = async () => {
     setLoading(true);
     try {
@@ -80,7 +84,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch orders for orders tab
   const fetchOrders = async () => {
     setLoading(true);
     try {
@@ -94,7 +97,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Fetch payments for payment tab
   const fetchPayments = async () => {
     setLoading(true);
     try {
@@ -108,48 +110,57 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle user role change
   const handleRoleChange = async (userId, newRole) => {
     try {
       await axios.put(`http://localhost:5000/api/auth/${userId}`, { role: newRole });
       setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: newRole } : u));
     } catch {
-      alert(" Failed to update role");
+      alert("Failed to update role");
     }
   };
 
-  // Handle user delete
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await axios.delete(`http://localhost:5000/api/auth/${userId}`);
       setUsers(prev => prev.filter(u => u._id !== userId));
     } catch {
-      alert(" Failed to delete user");
+      alert("Failed to delete user");
     }
   };
 
-  //Fetch partners
-  const fetchPartners = async () => {
+  const fetchPartnersPending = async () => {
     setLoading(true);
     try {
       const res = await axios.get('http://localhost:5000/api/admin/partners/pending');
-      console.log("Fetched partners:", res.data);
-      setPartners(res.data);
+      console.log("Fetched pending partners:", res.data);
+      setPartnersPending(res.data);
       setError(null);
     } catch (err) {
       console.error("Partners fetch error:", err);
-      setError('Failed to load partners');
+      setError('Failed to load pending partners');
     } finally {
       setLoading(false);
     }
   };
 
-  //Update partner status
+  const fetchPartnersAll = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get('http://localhost:5000/api/admin/partners/all');
+      setPartnersAll(res.data);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to fetch all partners.");
+      setLoading(false);
+    }
+  };
+
   const updatePartnerStatus = async (partnerId, status) => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/partners/verify/${partnerId}`, { status }); 
-      setPartners(prev => prev.filter(p => p._id !== partnerId));
+      await axios.put(`http://localhost:5000/api/admin/partners/verify/${partnerId}`, { status });
+      setPartnersPending(prev => prev.filter(p => p._id !== partnerId));
+      fetchPartnersAll(); // Refresh the approved list after approving
     } catch (err) {
       console.error("Partner status update error:", err);
       alert("Failed to update partner status");
@@ -161,9 +172,9 @@ const AdminDashboard = () => {
     { icon: <FiUsers />, name: 'Users', key: 'users' },
     { icon: <FiShoppingCart />, name: 'Orders', key: 'orders' },
     { icon: <FiPieChart />, name: 'Payments', key: 'payment' },
-    { icon: <RiUserStarLine/>, name: 'Partners', key: 'partners' }
+    { icon: <RiUserStarLine />, name: 'Partners', key: 'partners' }
   ];
-  
+
 
   return (
     <div className="flex h-screen font-sans bg-gray-50">
@@ -419,73 +430,116 @@ const AdminDashboard = () => {
 
           {/* Partners Section */}
           {activeTab === 'partners' && (
-            <div className="bg-white rounded-xl shadow-md border border-gray-200">
-              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
-                <h2 className="text-xl font-semibold text-gray-800">Pending Partner Requests</h2>
-                <button
-                  onClick={fetchPartners}
-                  className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
-                >
-                  <FiRefreshCw size={16} /> Refresh
-                </button>
-              </div>
+  <div className="bg-white rounded-xl shadow-md border border-gray-200">
+    <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
+      <h2 className="text-xl font-semibold text-gray-800">Partners Management</h2>
+      <button
+        onClick={fetchPartnersAll}
+        className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
+      >
+        <FiRefreshCw size={16} /> Refresh
+      </button>
+    </div>
 
-              {loading ? (
-                <div className="p-8 text-center text-gray-500">Loading...</div>
-              ) : error ? (
-                <div className="p-8 text-center text-red-500">{error}</div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-[#f9fafb] text-gray-600 text-xs uppercase">
-                      <tr>
-                        {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
-                          <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-100">
-                      {partners.map((partner) => (
-                        <tr key={partner._id} className="hover:bg-gray-50 text-sm">
-                          <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.email}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
-                          <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
-                          <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
-                          <td className="px-4 py-2 whitespace-nowrap">
-                            <button
-                              onClick={() => updatePartnerStatus(partner._id, 'approved')}
-                              className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => updatePartnerStatus(partner._id, 'rejected')}
-                              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
-                            >
-                              Reject
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                      {partners.length === 0 && (
-                        <tr>
-                          <td colSpan="11" className="text-center py-6 text-gray-400">No partner requests found.</td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+    {/* Approved Partners Section */}
+    <div className="px-6 py-4">
+      <h3 className="text-lg font-semibold text-green-700 mb-3">Approved Partners</h3>
+      {loading ? (
+        <div className="p-4 text-center text-gray-500">Loading...</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-[#f0fdf4] text-green-700 text-xs uppercase">
+              <tr>
+                {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details'].map((heading, i) => (
+                  <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {partnersAll.filter(p => p.status === 'approved').map((partner) => (
+                <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                  <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                  <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                </tr>
+              ))}
+              {partnersAll.filter(p => p.status === 'approved').length === 0 && (
+                <tr>
+                  <td colSpan="10" className="text-center py-6 text-gray-400">No approved partners found.</td>
+                </tr>
               )}
-            </div>
-          )}
-        </section>
-      </main>
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+
+    {/* Pending Requests Section */}
+    <div className="px-6 py-4 border-t border-gray-100">
+      <h3 className="text-lg font-semibold text-yellow-700 mb-3">Pending Partner Requests</h3>
+      {loading ? (
+        <div className="p-4 text-center text-gray-500">Loading...</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-[#fffbea] text-yellow-700 text-xs uppercase">
+              <tr>
+                {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
+                  <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-100">
+              {partnersAll.filter(p => p.status === 'pending').map((partner) => (
+                <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                  <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                  <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                  <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                  <td className="px-4 py-2 whitespace-nowrap">
+                    <button
+                      onClick={() => updatePartnerStatus(partner._id, 'approved')}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => updatePartnerStatus(partner._id, 'rejected')}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {partnersAll.filter(p => p.status === 'pending').length === 0 && (
+                <tr>
+                  <td colSpan="11" className="text-center py-6 text-gray-400">No pending requests found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+     </section>
+      </main>1
     </div>
   );
 };
