@@ -42,19 +42,18 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [usersRes, ordersRes, paymentsRes] = await Promise.all([
+      const [usersRes, ordersRes, paymentsRes, partnersRes] = await Promise.all([
         axios.get('http://localhost:5000/api/auth/all'),
         axios.get('http://localhost:5000/api/bike/all'),
-        axios.get('http://localhost:5000/api/payments/all')
-      
+        axios.get('http://localhost:5000/api/payments/all'),
+        axios.get('http://localhost:5000/api/admin/partners/all')
       ]);
-      
+  
       setUsers(usersRes.data);
       setOrders(ordersRes.data);
       setPayments(paymentsRes.data);
-      setPartnersPending([]);
-      setPartnersAll([]);
-      
+      setPartnersAll(partnersRes.data);
+  
       const totalRevenue = paymentsRes.data.reduce((acc, p) => acc + (Number(p.amount) || 0), 0);
       setStats({
         totalUsers: usersRes.data.length,
@@ -62,7 +61,7 @@ const AdminDashboard = () => {
         totalRevenue,
         monthlyGrowth: 12.5
       });
-      
+  
       setError(null);
     } catch (err) {
       setError('Failed to load dashboard data');
@@ -70,6 +69,7 @@ const AdminDashboard = () => {
       setLoading(false);
     }
   };
+  
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -149,9 +149,10 @@ const AdminDashboard = () => {
       setLoading(true);
       const res = await axios.get('http://localhost:5000/api/admin/partners/all');
       setPartnersAll(res.data);
-      setLoading(false);
+      setError(null);
     } catch (err) {
       setError("Failed to fetch all partners.");
+    } finally {
       setLoading(false);
     }
   };
@@ -430,17 +431,7 @@ const AdminDashboard = () => {
 
           {/* Partners Section */}
           {activeTab === 'partners' && (
-  <div className="bg-white rounded-xl shadow-md border border-gray-200">
-    <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
-      <h2 className="text-xl font-semibold text-gray-800">Partners Management</h2>
-      <button
-        onClick={fetchPartnersAll}
-        className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
-      >
-        <FiRefreshCw size={16} /> Refresh
-      </button>
-    </div>
-
+  <>
     {/* Approved Partners Section */}
     <div className="px-6 py-4">
       <h3 className="text-lg font-semibold text-green-700 mb-3">Approved Partners</h3>
@@ -457,7 +448,7 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {partnersAll.filter(p => p.status === 'approved').map((partner) => (
+              {partnersAll.filter(p => p.status?.toLowerCase() === 'approved').map((partner) => (
                 <tr key={partner._id} className="hover:bg-gray-50 text-sm">
                   <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
                   <td className="px-4 py-2 text-gray-600">{partner.email}</td>
@@ -471,7 +462,7 @@ const AdminDashboard = () => {
                   <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
                 </tr>
               ))}
-              {partnersAll.filter(p => p.status === 'approved').length === 0 && (
+              {partnersAll.filter(p => p.status?.toLowerCase() === 'approved').length === 0 && (
                 <tr>
                   <td colSpan="10" className="text-center py-6 text-gray-400">No approved partners found.</td>
                 </tr>
@@ -498,7 +489,7 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {partnersAll.filter(p => p.status === 'pending').map((partner) => (
+              {partnersAll.filter(p => p.status?.toLowerCase() === 'pending').map((partner) => (
                 <tr key={partner._id} className="hover:bg-gray-50 text-sm">
                   <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
                   <td className="px-4 py-2 text-gray-600">{partner.email}</td>
@@ -526,7 +517,7 @@ const AdminDashboard = () => {
                   </td>
                 </tr>
               ))}
-              {partnersAll.filter(p => p.status === 'pending').length === 0 && (
+              {partnersAll.filter(p => p.status?.toLowerCase() === 'pending').length === 0 && (
                 <tr>
                   <td colSpan="11" className="text-center py-6 text-gray-400">No pending requests found.</td>
                 </tr>
@@ -536,7 +527,7 @@ const AdminDashboard = () => {
         </div>
       )}
     </div>
-  </div>
+  </>
 )}
      </section>
       </main>1

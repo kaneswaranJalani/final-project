@@ -11,19 +11,14 @@ import {
   FiLock, FiShield
 } from "react-icons/fi";
 
-// Main component
 const Payment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
 
-  // Read passed data from route state
-  const [bikeData, setBikeData] = useState({
-    name: "",
-    price: "",
-    color: ""
-  });
+  const [items, setItems] = useState([]);
+  const [total, setTotal] = useState(0);
 
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [upiId, setUpiId] = useState("");
@@ -31,30 +26,17 @@ const Payment = () => {
   const [clientSecret, setClientSecret] = useState("");
   const [timer, setTimer] = useState(300);
 
-  // Handle missing or invalid state
   useEffect(() => {
-    if (!location.state?.name || !location.state?.price || !location.state?.color) {
-      console.warn("Missing payment state. Redirecting to sample...");
-      navigate("/payment", {
-        replace: true,
-        state: {
-          name: "Mountain Bike",
-          price: 1200,
-          color: "red",
-        },
-      });
+    const state = location.state;
+    if (!state?.items || !Array.isArray(state.items)) {
+      console.warn("Missing cart data. Redirecting...");
+      navigate("/item");
     } else {
-      setBikeData({
-        name: location.state.name,
-        price: location.state.price,
-        color: location.state.color
-      });
+      setItems(state.items);
+      setTotal(state.total || 0);
     }
   }, [location.state]);
 
-  const { name, price, color } = bikeData;
-
-  // Countdown timer
   useEffect(() => {
     const interval = setInterval(() => {
       setTimer((prev) => (prev > 0 ? prev - 1 : 0));
@@ -65,10 +47,10 @@ const Payment = () => {
   // Fetch Stripe client secret
   useEffect(() => {
     const fetchClientSecret = async () => {
-      if (!price) return;
+      if (!total) return;
       try {
         const res = await axios.post("http://localhost:5000/api/stripe/create-payment-intent", {
-          amount: price * 100,
+          amount: total * 100,
           currency: "inr",
         });
         setClientSecret(res.data.clientSecret);
@@ -79,7 +61,7 @@ const Payment = () => {
     };
 
     if (paymentMethod === "card") fetchClientSecret();
-  }, [price, paymentMethod]);
+  }, [total, paymentMethod]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -87,7 +69,6 @@ const Payment = () => {
     return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
-  // Handle card or UPI payment
   const handlePayment = async () => {
     setIsProcessing(true);
 
@@ -120,9 +101,8 @@ const Payment = () => {
         }
 
         await axios.post("http://localhost:5000/api/payments/save", {
-          bikeName: name,
-          amount: price,
-          color,
+          items,
+          total,
           paymentMethod: "card",
           cardLast4: "****",
         });
@@ -130,8 +110,8 @@ const Payment = () => {
         navigate("/paymentsuccess", {
           state: {
             transactionId: paymentIntent.id,
-            amount: price,
-            bikeName: name,
+            amount: total,
+            items,
           },
         });
       } catch (err) {
@@ -147,18 +127,17 @@ const Payment = () => {
 
       try {
         await axios.post("http://localhost:5000/api/payments/save", {
-          bikeName: name,
-          amount: price,
-          color,
+          items,
+          total,
           paymentMethod: "upi",
           upiId,
         });
 
         navigate("/paymentsuccess", {
           state: {
-            transactionId: Date.now().toString(),
-            amount: price,
-            bikeName: name,
+            transactionId: `upi_txn_${Date.now()}`, // fake txn ID for demo
+            amount: total,
+            items,
           },
         });
       } catch (err) {
@@ -187,20 +166,32 @@ const Payment = () => {
               </h2>
 
               <div className="space-y-4 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Bike Model</span>
-                  <span className="font-medium text-[#4c092b]">{name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Color</span>
-                  <span className="font-medium text-[#4c092b] capitalize">{color}</span>
-                </div>
+                {items.map((item, index) => (
+                  <div key={index} className="bg-[#f9f0f5] p-3 rounded-lg">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Bike Model:</span>
+                      <span className="font-medium">{item.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Color:</span>
+                      <span className="font-medium capitalize">{item.color}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Duration:</span>
+                      <span className="font-medium">{item.duration} hrs</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Price:</span>
+                      <span className="font-semibold text-[#67103d]">Rs. {item.price}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="border-t border-[#e8d8e1] pt-4">
                 <div className="flex justify-between text-lg">
                   <span className="font-semibold text-[#67103d]">Total</span>
-                  <span className="font-bold text-[#67103d]">Rs. {price}</span>
+                  <span className="font-bold text-[#67103d]">Rs. {total}</span>
                 </div>
               </div>
 
@@ -297,7 +288,7 @@ const Payment = () => {
                       : "bg-[#67103d] hover:bg-[#4c092b] shadow-lg hover:shadow-xl"
                   }`}
                 >
-                  {isProcessing ? "Processing..." : <> <FiLock /> Pay Rs. {price} </>}
+                  {isProcessing ? "Processing..." : <> <FiLock /> Pay Rs. {total} </>}
                 </button>
 
                 <div className="mt-4 flex items-center justify-center gap-2 text-sm text-[#8a5a75]">
