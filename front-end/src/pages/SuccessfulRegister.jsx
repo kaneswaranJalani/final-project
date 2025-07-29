@@ -1,12 +1,15 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircleIcon, XMarkIcon } from "@heroicons/react/24/solid";
+import { toast } from 'react-toastify';
+
 
 const SuccessfulRegister = () => {
   const navigate = useNavigate();
 
   const handleResendEmail = () => {
     alert('📧 Confirmation email resent.');
+    toast.success('Confirmation email resent successfully!');
   };
 
   const handleClose = () => {

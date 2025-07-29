@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FiLogIn, FiMail, FiLock } from "react-icons/fi";
 import { useAuth } from "../context/AuthContext";
+import { toast } from 'react-toastify';
+
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -34,6 +36,9 @@ const Login = () => {
   const handleConfirm = () => {
     localStorage.setItem("token", userInfo.token);
     login(userInfo);
+    toast.success(`Welcome back, ${userInfo.name}!`, {
+      autoClose: 3000,
+    });
     const role = userInfo.role;
     if (role === "user") {
       navigate("/Item");

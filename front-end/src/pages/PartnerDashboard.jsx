@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PencilSquare, PlusCircle, Trash } from 'react-bootstrap-icons';
+import { PencilSquare, PlusCircle, Trash, ClockHistory, CheckCircle, XCircle } from 'react-bootstrap-icons';
 
 const InfoRow = ({ label, value }) => (
   <div className="flex justify-between py-3 px-4 hover:bg-[#f9f5f7] rounded-lg transition-colors">
@@ -12,6 +12,7 @@ const InfoRow = ({ label, value }) => (
 const PartnerDashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [bicycles, setBicycles] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
   const partnerId = JSON.parse(localStorage.getItem('user'))?.id;
@@ -66,8 +67,18 @@ const PartnerDashboard = () => {
     }
   };
 
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/orders/partner/${partnerId}`);
+      setOrders(res.data);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+    }
+  };
+
   useEffect(() => {
     fetchBicycles();
+    fetchOrders();
   }, [partnerId]);
 
   const handleTabChange = (tab) => setActiveTab(tab);
@@ -121,6 +132,15 @@ const PartnerDashboard = () => {
     }
   };
 
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      await axios.put(`http://localhost:5000/api/orders/${orderId}`, { status });
+      await fetchOrders();
+    } catch (err) {
+      console.error('Failed to update order status:', err);
+    }
+  };
+
   const handleProfileSubmit = (e) => {
     e.preventDefault();
     setIsEditingProfile(false);
@@ -143,6 +163,23 @@ const PartnerDashboard = () => {
     );
   };
 
+  const getOrderStatusBadge = (status) => {
+    const statusMap = {
+      pending: { color: 'bg-blue-100 text-blue-800', icon: <ClockHistory className="mr-1" size={12} /> },
+      completed: { color: 'bg-green-100 text-green-800', icon: <CheckCircle className="mr-1" size={12} /> },
+      cancelled: { color: 'bg-red-100 text-red-800', icon: <XCircle className="mr-1" size={12} /> },
+    };
+    
+    const statusInfo = statusMap[status] || { color: 'bg-gray-100 text-gray-800', icon: null };
+    
+    return (
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
+        {statusInfo.icon}
+        {status.charAt(0).toUpperCase() + status.slice(1)}
+      </span>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa] p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto">
@@ -154,7 +191,7 @@ const PartnerDashboard = () => {
           </div>
           <div className="mt-4 md:mt-0">
             <div className="inline-flex rounded-lg bg-white p-1 shadow-sm border border-gray-200">
-              {['profile', 'add-bicycle', 'manage-bicycles'].map(tab => (
+              {['profile', 'add-bicycle', 'manage-bicycles', 'orders'].map(tab => (
                 <button
                   key={tab}
                   onClick={() => {
@@ -218,8 +255,8 @@ const PartnerDashboard = () => {
                           <p className="text-xs text-gray-500">Bicycles</p>
                         </div>
                         <div className="bg-white p-3 rounded-lg shadow-xs text-center">
-                          <p className="text-2xl font-bold text-[#67103d]">24</p>
-                          <p className="text-xs text-gray-500">Rentals</p>
+                          <p className="text-2xl font-bold text-[#67103d]">{orders.length}</p>
+                          <p className="text-xs text-gray-500">Total Orders</p>
                         </div>
                         <div className="bg-white p-3 rounded-lg shadow-xs text-center">
                           <p className="text-2xl font-bold text-[#67103d]">4.8</p>
@@ -419,6 +456,100 @@ const PartnerDashboard = () => {
                             <Trash size={14} />
                             Delete
                           </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Orders Tab */}
+        {activeTab === 'orders' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-semibold text-[#67103d]">Rental Orders</h2>
+              <p className="text-gray-500 mt-1">View and manage orders for your bicycles</p>
+            </div>
+            
+            <div className="overflow-x-auto">
+              {orders.length === 0 ? (
+                <div className="p-12 text-center">
+                  <div className="mx-auto w-24 h-24 bg-[#f9f0f5] rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-10 h-10 text-[#67103d]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-700">No orders yet</h3>
+                  <p className="text-gray-500 mt-1">When you receive orders, they will appear here</p>
+                </div>
+              ) : (
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-[#f9f0f5]">
+                    <tr>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Order ID</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Bicycle</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Customer</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Dates</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Total</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-[#67103d] uppercase tracking-wider">Status</th>
+                      <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-[#67103d] uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {orders.map(order => (
+                      <tr key={order._id} className="hover:bg-[#f9f5f7] transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">#{order._id.slice(-6).toUpperCase()}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10 bg-[#f9f0f5] rounded-lg flex items-center justify-center">
+                              <span className="text-[#67103d]">🚴</span>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{order.bicycleId?.name}</div>
+                              <div className="text-sm text-gray-500">{order.bicycleId?.brand} {order.bicycleId?.model}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{order.userId?.name}</div>
+                          <div className="text-sm text-gray-500">{order.userId?.email}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {new Date(order.startDate).toLocaleDateString()} - {new Date(order.endDate).toLocaleDateString()}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {order.rentalType === 'hourly' ? `${order.duration} hours` : `${order.duration} days`}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">${order.totalAmount.toFixed(2)}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {getOrderStatusBadge(order.status)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          {order.status === 'pending' && (
+                            <div className="flex gap-2 justify-end">
+                              <button
+                                onClick={() => updateOrderStatus(order._id, 'completed')}
+                                className="px-3 py-1 bg-green-600 text-white rounded-md text-xs hover:bg-green-700"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => updateOrderStatus(order._id, 'cancelled')}
+                                className="px-3 py-1 bg-red-600 text-white rounded-md text-xs hover:bg-red-700"
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}

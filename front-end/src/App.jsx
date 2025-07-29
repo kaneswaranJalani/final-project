@@ -1,6 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -10,9 +12,9 @@ import UserRegister from "./pages/UserRegister";
 import PartnerRegister from "./pages/PartnerRegister";
 import Feedback from "./pages/Feedback";
 import Payment from "./pages/Payment";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/DashboardOverview";
 import SuccessfulRegister from "./pages/SuccessfulRegister";
-import Item from "./pages/Item";
+import Item from "./pages/BikeList";
 import Terms from "./pages/Terms";
 import PartnerTerms from "./pages/PartnerTerms";
 import Reciept from "./pages/Reciept";
@@ -24,7 +26,10 @@ import BicycleTracking from "./pages/BicycleTracking";
 import PartnerVerification from "./pages/PartnerVerification";
 import Modal from "./pages/ModalForm";
 import RentalHistory from "./pages/RentalHistory";
-// import CartPage from "./pages/CartPage";
+import BikeSelection from "./pages/BikeSelection";
+import BikeRental from "./pages/BikeRental";
+import CartPage from "./pages/CartPage";
+import AdminLayout from "./layouts/AdminLayout";
 
 // ✅ Load Stripe public key (replace with your own test/public key)
 const stripe = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
@@ -33,6 +38,10 @@ const stripePromise = loadStripe(stripe);
 function App() {
   return (
     <>
+
+      {/* Your routes/components */}
+      <ToastContainer position="top-right" autoClose={3000} />
+    
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -66,7 +75,12 @@ function App() {
         <Route path="/PartnerVerification" element={<PartnerVerification />} />
         <Route path="/Modal" element={<Modal />} />
         <Route path="/RentalHistory" element={<RentalHistory />} />
-        {/* <Route path="/CartPage" element={<CartPage />} /> */}
+        <Route path="/BikeSelection" element={<BikeSelection />} />
+        <Route path="/BikeRental" element={<BikeRental />} />
+        <Route path="/CartPage" element={<CartPage />} />
+        <Route path="/admin/*" element={<AdminLayout />} />
+        
+        {/* Fallback route */}
       </Routes>
     </>
   );

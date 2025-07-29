@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ for navigation
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  FiUser, FiMail, FiLock, FiPhone, FiCreditCard, FiHome, FiBriefcase,
-  FiClock, FiMapPin, FiFileText, FiStar
+  FiArrowLeft, FiBriefcase, FiStar, FiUser, FiMail, FiLock, FiPhone,
+  FiCreditCard, FiHome, FiClock, FiMapPin, FiFileText
 } from "react-icons/fi";
 
 const PartnerRegister = () => {
+  const navigate = useNavigate(); // ✅ must be declared inside the component
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -22,7 +24,7 @@ const PartnerRegister = () => {
     partnerTier: "basic",
   });
 
-  const navigate = useNavigate(); // ✅ must be declared here
+  const handleBack = () => navigate(-1); // ✅ Back to previous page
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,8 +34,7 @@ const PartnerRegister = () => {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/api/auth/register/partner", form);
-      // alert(res.data.message);
-      navigate("/Login", { state: { partnerData: form } }); 
+      navigate("/Login", { state: { partnerData: form } });
       alert("Registration successful! Please check your email for verification.");
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
@@ -44,6 +45,18 @@ const PartnerRegister = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <div className="mb-4">
+          <button
+            onClick={handleBack}
+            className="inline-flex items-center text-[#67103d] hover:underline text-sm font-medium"
+          >
+            <FiArrowLeft className="mr-2" />
+            Back
+          </button>
+        </div>
+
+        {/* Header */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">
             Join Our <span className="text-[#67103d]">Partner Network</span>
@@ -53,6 +66,7 @@ const PartnerRegister = () => {
           </p>
         </div>
 
+        {/* Form Card */}
         <div className="bg-white shadow-xl rounded-2xl overflow-hidden">
           <div className="md:flex">
             {/* Left side */}
@@ -79,10 +93,11 @@ const PartnerRegister = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="col-span-2">
-                    <h3 className="text-lg font-medium text-gray-900 mb-4 border-b pb-2 border-[#67103d]">Personal Information</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4 border-b pb-2 border-[#67103d]">
+                      Personal Information
+                    </h3>
                   </div>
 
-                  {/* Form Fields */}
                   {[
                     { label: "Full Name", icon: <FiUser />, name: "name", type: "text" },
                     { label: "Email Address", icon: <FiMail />, name: "email", type: "email" },
@@ -127,7 +142,7 @@ const PartnerRegister = () => {
                     />
                   </div>
 
-                  {/* Tier Dropdown */}
+                  {/* Partner Tier Dropdown */}
                   <div className="sm:col-span-2">
                     <label htmlFor="partnerTier" className="block text-sm font-medium text-gray-700">
                       <FiStar className="inline mr-2 text-[#67103d]" /> Partner Tier
@@ -146,7 +161,7 @@ const PartnerRegister = () => {
                   </div>
                 </div>
 
-                {/* Submit */}
+                {/* Submit Button */}
                 <div className="flex justify-end">
                   <button
                     type="submit"
@@ -162,6 +177,6 @@ const PartnerRegister = () => {
       </div>
     </div>
   );
-}
+};
 
 export default PartnerRegister;

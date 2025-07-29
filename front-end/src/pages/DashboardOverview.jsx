@@ -3,7 +3,7 @@ import axios from 'axios';
 import {
   FiHome, FiUsers, FiSettings, FiPieChart, FiShoppingCart,
   FiBell, FiSearch, FiMenu, FiUser, FiDollarSign, FiShoppingBag, 
-  FiChevronDown, FiTrash2, FiEdit, FiRefreshCw
+  FiChevronDown, FiTrash2, FiEdit, FiRefreshCw, FiMail
 } from 'react-icons/fi';
 import { RiUserStarLine } from "react-icons/ri";
 
@@ -23,6 +23,13 @@ const AdminDashboard = () => {
     totalRevenue: 0,
     monthlyGrowth: 12.5 // percentage (static here, can be dynamic)
   });
+
+  // Order status options
+  const orderStatusOptions = [
+    'Pending',
+    'Confirmed',
+    'Cancelled'
+  ];
 
   useEffect(() => {
     fetchDashboardData();
@@ -46,7 +53,6 @@ const AdminDashboard = () => {
         axios.get('http://localhost:5000/api/auth/all'),
         axios.get('http://localhost:5000/api/bike/all'),
         axios.get('http://localhost:5000/api/payments/all')
-      
       ]);
       
       setUsers(usersRes.data);
@@ -129,6 +135,27 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleOrderStatusChange = async (orderId, newStatus) => {
+    try {
+      await axios.put(`http://localhost:5000/api/bike/${orderId}`, { status: newStatus });
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus } : o));
+    } catch {
+      alert("Failed to update order status");
+    }
+  };
+
+  const sendOrderEmail = (order) => {
+    // This would be replaced with actual email sending logic
+    const emailSubject = `Your Order #${order._id} Status Update`;
+    const emailBody = `Dear Customer,\n\nYour order for ${order.bikeName} (${order.color}) is now ${order.status}.\n\nThank you for your business!\n\nSincerely,\nThe Bike Rental Team`;
+    
+    // In a real implementation, you would call your backend API to send the email
+    console.log(`Would send email to ${order.email} with subject: ${emailSubject}`);
+    console.log(`Email body: ${emailBody}`);
+    
+    alert(`Email would be sent to customer about order status update.`);
+  };
+
   const fetchPartnersPending = async () => {
     setLoading(true);
     try {
@@ -174,7 +201,6 @@ const AdminDashboard = () => {
     { icon: <FiPieChart />, name: 'Payments', key: 'payment' },
     { icon: <RiUserStarLine />, name: 'Partners', key: 'partners' }
   ];
-
 
   return (
     <div className="flex h-screen font-sans bg-gray-50">
@@ -343,6 +369,7 @@ const AdminDashboard = () => {
                         )}
                         {activeTab === 'orders' && (
                           <>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bike</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
@@ -395,11 +422,36 @@ const AdminDashboard = () => {
                           )}
                           {activeTab === 'orders' && (
                             <>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                #{item._id.substring(0, 6).toUpperCase()}
+                              </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.bikeName || item.name}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.color}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.price}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs. {item.price}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <div className="relative">
+                                  <select
+                                    value={item.status || 'Pending'}
+                                    onChange={(e) => handleOrderStatusChange(item._id, e.target.value)}
+                                    className="block appearance-none w-full bg-white border border-gray-300 text-gray-700 py-2 px-3 pr-8 rounded leading-tight focus:outline-none focus:ring-[#67103d] focus:border-[#67103d]"
+                                  >
+                                    {orderStatusOptions.map(option => (
+                                      <option key={option} value={option}>{option}</option>
+                                    ))}
+                                  </select>
+                                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <FiChevronDown className="fill-current h-4 w-4" />
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <button 
+                                  onClick={() => sendOrderEmail(item)}
+                                  className="text-blue-600 hover:text-blue-800 mr-3"
+                                  title="Send status email"
+                                >
+                                  <FiMail />
+                                </button>
                                 <button className="text-[#67103d] hover:text-[#50052c]" title="Edit order">
                                   <FiEdit />
                                 </button>
@@ -410,7 +462,7 @@ const AdminDashboard = () => {
                             <>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.bikeName || item.name}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.color}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.amount}</td>
+                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Rs. {item.amount}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.status}</td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <button className="text-[#67103d] hover:text-[#50052c]" title="Edit payment">
@@ -430,116 +482,116 @@ const AdminDashboard = () => {
 
           {/* Partners Section */}
           {activeTab === 'partners' && (
-  <div className="bg-white rounded-xl shadow-md border border-gray-200">
-    <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
-      <h2 className="text-xl font-semibold text-gray-800">Partners Management</h2>
-      <button
-        onClick={fetchPartnersAll}
-        className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
-      >
-        <FiRefreshCw size={16} /> Refresh
-      </button>
-    </div>
+            <div className="bg-white rounded-xl shadow-md border border-gray-200">
+              <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-800">Partners Management</h2>
+                <button
+                  onClick={fetchPartnersAll}
+                  className="flex items-center gap-2 text-sm font-medium text-[#67103d] hover:text-[#50052c]"
+                >
+                  <FiRefreshCw size={16} /> Refresh
+                </button>
+              </div>
 
-    {/* Approved Partners Section */}
-    <div className="px-6 py-4">
-      <h3 className="text-lg font-semibold text-green-700 mb-3">Approved Partners</h3>
-      {loading ? (
-        <div className="p-4 text-center text-gray-500">Loading...</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-[#f0fdf4] text-green-700 text-xs uppercase">
-              <tr>
-                {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details'].map((heading, i) => (
-                  <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {partnersAll.filter(p => p.status === 'approved').map((partner) => (
-                <tr key={partner._id} className="hover:bg-gray-50 text-sm">
-                  <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.email}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
-                  <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
-                </tr>
-              ))}
-              {partnersAll.filter(p => p.status === 'approved').length === 0 && (
-                <tr>
-                  <td colSpan="10" className="text-center py-6 text-gray-400">No approved partners found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+              {/* Approved Partners Section */}
+              <div className="px-6 py-4">
+                <h3 className="text-lg font-semibold text-green-700 mb-3">Approved Partners</h3>
+                {loading ? (
+                  <div className="p-4 text-center text-gray-500">Loading...</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-[#f0fdf4] text-green-700 text-xs uppercase">
+                        <tr>
+                          {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details'].map((heading, i) => (
+                            <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-100">
+                        {partnersAll.filter(p => p.status === 'approved').map((partner) => (
+                          <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                            <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                            <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                          </tr>
+                        ))}
+                        {partnersAll.filter(p => p.status === 'approved').length === 0 && (
+                          <tr>
+                            <td colSpan="10" className="text-center py-6 text-gray-400">No approved partners found.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
 
-    {/* Pending Requests Section */}
-    <div className="px-6 py-4 border-t border-gray-100">
-      <h3 className="text-lg font-semibold text-yellow-700 mb-3">Pending Partner Requests</h3>
-      {loading ? (
-        <div className="p-4 text-center text-gray-500">Loading...</div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-[#fffbea] text-yellow-700 text-xs uppercase">
-              <tr>
-                {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
-                  <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-100">
-              {partnersAll.filter(p => p.status === 'pending').map((partner) => (
-                <tr key={partner._id} className="hover:bg-gray-50 text-sm">
-                  <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.email}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
-                  <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
-                  <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
-                  <td className="px-4 py-2 whitespace-nowrap">
-                    <button
-                      onClick={() => updatePartnerStatus(partner._id, 'approved')}
-                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
-                    >
-                      Approve
-                    </button>
-                    <button
-                      onClick={() => updatePartnerStatus(partner._id, 'rejected')}
-                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
-                    >
-                      Reject
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {partnersAll.filter(p => p.status === 'pending').length === 0 && (
-                <tr>
-                  <td colSpan="11" className="text-center py-6 text-gray-400">No pending requests found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  </div>
-)}
-     </section>
-      </main>1
+              {/* Pending Requests Section */}
+              <div className="px-6 py-4 border-t border-gray-100">
+                <h3 className="text-lg font-semibold text-yellow-700 mb-3">Pending Partner Requests</h3>
+                {loading ? (
+                  <div className="p-4 text-center text-gray-500">Loading...</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-[#fffbea] text-yellow-700 text-xs uppercase">
+                        <tr>
+                          {['Name', 'Email', 'Phone', 'NIC', 'Business', 'Type', 'Area', 'Tier', 'Years', 'Details', 'Action'].map((heading, i) => (
+                            <th key={i} className="px-4 py-3 text-left font-medium">{heading}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-100">
+                        {partnersAll.filter(p => p.status === 'pending').map((partner) => (
+                          <tr key={partner._id} className="hover:bg-gray-50 text-sm">
+                            <td className="px-4 py-2 font-semibold text-gray-900">{partner.name}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.email}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.phone}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.nic}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.businessName}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.businessType}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.rentalArea}</td>
+                            <td className="px-4 py-2 text-gray-600 capitalize">{partner.partnerTier}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.yearsInBusiness}</td>
+                            <td className="px-4 py-2 text-gray-600">{partner.additionalDetails}</td>
+                            <td className="px-4 py-2 whitespace-nowrap">
+                              <button
+                                onClick={() => updatePartnerStatus(partner._id, 'approved')}
+                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs mr-2"
+                              >
+                                Approve
+                              </button>
+                              <button
+                                onClick={() => updatePartnerStatus(partner._id, 'rejected')}
+                                className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                              >
+                                Reject
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {partnersAll.filter(p => p.status === 'pending').length === 0 && (
+                          <tr>
+                            <td colSpan="11" className="text-center py-6 text-gray-400">No pending requests found.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 };
