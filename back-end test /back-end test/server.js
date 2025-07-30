@@ -13,6 +13,7 @@ import stripeRoutes from './routes/stripeRoutes.js';
 import adminRoutes from './routes/adminRoutes.js'; // Import admin routes
 import partnerRoutes from './routes/partnerRoutes.js'; // Import partner routes
 import uploadRoute from './routes/upload.js'; // Import upload routes
+import otpRoutes from './routes/otpRoutes.js'; // Import OTP routes
 
 dotenv.config();
 
@@ -32,6 +33,7 @@ app.use('/api/stripe', stripeRoutes);
 app.use('/api/admin', adminRoutes); // Admin routes
 app.use('/api/partners', partnerRoutes); // Partner routes
 app.use('/api/upload', uploadRoute);
+app.use('/api/otp', otpRoutes); // OTP routes
 
 
 
@@ -49,6 +51,7 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1);
   });
 
+  
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

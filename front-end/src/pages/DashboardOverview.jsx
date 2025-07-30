@@ -183,16 +183,20 @@ const AdminDashboard = () => {
     }
   };
 
-  const updatePartnerStatus = async (partnerId, status) => {
-    try {
-      await axios.put(`http://localhost:5000/api/admin/partners/verify/${partnerId}`, { status });
-      setPartnersPending(prev => prev.filter(p => p._id !== partnerId));
-      fetchPartnersAll(); // Refresh the approved list after approving
-    } catch (err) {
-      console.error("Partner status update error:", err);
-      alert("Failed to update partner status");
-    }
-  };
+ // DashboardOverview.jsx
+const updatePartnerStatus = async (partnerId, newStatus) => {
+  try {
+    const response = await axios.put(`http://localhost:5000/api/partners/verify/${partnerId}`, {
+      status: newStatus
+    });
+    console.log(response.data.message);
+    toast.success(response.data.message);
+  } catch (err) {
+    console.error("Partner status update error:", err);
+    toast.error("Failed to update partner status");
+  }
+};
+
 
   const menuItems = [
     { icon: <FiHome />, name: 'Dashboard', key: 'dashboard' },

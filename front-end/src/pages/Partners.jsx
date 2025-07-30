@@ -7,10 +7,12 @@ const Partners = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Fetch partners on mount
   useEffect(() => {
     fetchPartnersAll();
   }, []);
 
+  // Fetch all partners
   const fetchPartnersAll = async () => {
     try {
       setLoading(true);
@@ -18,16 +20,22 @@ const Partners = () => {
       setPartnersAll(res.data);
       setError(null);
     } catch (err) {
+      console.error(err);
       setError("Failed to fetch all partners.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Approve/Reject partner
   const updatePartnerStatus = async (partnerId, status) => {
     try {
+      const confirm = window.confirm(`Are you sure you want to ${status} this partner?`);
+      if (!confirm) return;
+
       await axios.put(`http://localhost:5000/api/admin/partners/verify/${partnerId}`, { status });
-      fetchPartnersAll(); // Refresh the list after updating status
+      fetchPartnersAll(); // Refresh list
+      alert(`Partner ${status} successfully and notified via email.`);
     } catch (err) {
       console.error("Partner status update error:", err);
       alert("Failed to update partner status");
@@ -49,7 +57,7 @@ const Partners = () => {
         </button>
       </div>
 
-      {/* Approved Partners Section */}
+      {/* Approved Partners */}
       <div className="px-6 py-4">
         <h3 className="text-lg font-semibold text-green-700 mb-3">Approved Partners</h3>
         <div className="overflow-x-auto">
@@ -86,7 +94,7 @@ const Partners = () => {
         </div>
       </div>
 
-      {/* Pending Requests Section */}
+      {/* Pending Requests */}
       <div className="px-6 py-4 border-t border-gray-100">
         <h3 className="text-lg font-semibold text-yellow-700 mb-3">Pending Partner Requests</h3>
         <div className="overflow-x-auto">

@@ -7,7 +7,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import {
-  FiCreditCard, FiCheckCircle, FiLock, FiShield, FiCalendar, FiClock, FiMapPin, FiWatch
+  FiCreditCard, FiCheckCircle, FiLock, FiShield, FiCalendar, 
+  FiClock, FiMapPin, FiArrowLeft
 } from "react-icons/fi";
 
 const Payment = () => {
@@ -20,36 +21,25 @@ const Payment = () => {
     name: "",
     price: "",
     color: "",
-    duration: "",
     pickupLocation: "",
     startDate: "",
-    startTime: ""
+    startTime: "",
+    endTime: ""
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [clientSecret, setClientSecret] = useState("");
 
   // Get bike data from location state
   useEffect(() => {
-    const { name, price, color, duration, pickupLocation, startDate, startTime } = location.state || {};
-    if (!name || !price || !color || !duration || !pickupLocation || !startDate || !startTime) {
-      navigate("/payment", {
-        replace: true,
-        state: {
-          name: "Mountain Bike",
-          price: 1200,
-          color: "red",
-          duration: "3 days",
-          pickupLocation: "Main Station",
-          startDate: "2023-06-15",
-          startTime: "10:00 AM"
-        },
-      });
+    const { name, price, color, pickupLocation, startDate, startTime, endTime } = location.state || {};
+    if (!name || !price || !color || !pickupLocation || !startDate || !startTime || !endTime) {
+      navigate("/payment", { replace: true });
     } else {
-      setBikeData({ name, price, color, duration, pickupLocation, startDate, startTime });
+      setBikeData({ name, price, color, pickupLocation, startDate, startTime, endTime });
     }
   }, [location.state, navigate]);
 
-  const { name, price, color, duration, pickupLocation, startDate, startTime } = bikeData;
+  const { name, price, color, pickupLocation, startDate, startTime, endTime } = bikeData;
 
   // Get client secret for Stripe
   useEffect(() => {
@@ -104,10 +94,10 @@ const Payment = () => {
         bikeName: name,
         amount: price,
         color,
-        duration,
         pickupLocation,
         startDate,
         startTime,
+        endTime,
         paymentMethod: "card",
         cardLast4: "****",
       });
@@ -117,10 +107,10 @@ const Payment = () => {
           transactionId: paymentIntent.id,
           amount: price,
           bikeName: name,
-          duration,
           pickupLocation,
           startDate,
-          startTime
+          startTime,
+          endTime
         },
       });
     } catch (err) {
@@ -134,6 +124,13 @@ const Payment = () => {
   return (
     <div className="min-h-screen bg-[#f9f5f7] py-12 px-4">
       <div className="max-w-4xl mx-auto">
+        <button 
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-[#67103d] mb-6 hover:text-[#4c092b]"
+        >
+          <FiArrowLeft /> Back to Cart
+        </button>
+
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-[#67103d] mb-2">Complete Your Payment</h1>
           <p className="text-[#8a5a75]">Secure checkout with Stripe</p>
@@ -158,27 +155,23 @@ const Payment = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <FiWatch /> Duration
-                  </span>
-                  <span className="font-medium text-[#4c092b]">{duration}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600 flex items-center gap-1">
                     <FiMapPin /> Pickup Location
                   </span>
                   <span className="font-medium text-[#4c092b]">{pickupLocation}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <FiCalendar /> Start Date
+                    <FiCalendar /> Rental Date
                   </span>
                   <span className="font-medium text-[#4c092b]">{startDate}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <FiClock /> Start Time
+                    <FiClock /> Rental Period
                   </span>
-                  <span className="font-medium text-[#4c092b]">{startTime}</span>
+                  <span className="font-medium text-[#4c092b]">
+                    {startTime} - {endTime}
+                  </span>
                 </div>
               </div>
 

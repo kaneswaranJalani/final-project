@@ -1,14 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { FiX, FiShoppingCart, FiCreditCard, FiArrowLeft, FiTrendingUp } from "react-icons/fi";
-
-const timeOptions = [
-  { value: 1, label: "1 hour" },
-  { value: 4, label: "4 hours" },
-  { value: 8, label: "8 hours" },
-  { value: 24, label: "1 day" },
-  { value: 168, label: "1 week" }
-];
+import { FiX, FiShoppingCart, FiCreditCard, FiArrowLeft, FiTrendingUp, FiClock } from "react-icons/fi";
 
 const CartPage = () => {
   const location = useLocation();
@@ -29,10 +21,10 @@ const CartPage = () => {
         name: firstItem.bike.name,
         price: firstItem.totalPrice,
         color: firstItem.color,
-        duration: timeOptions.find(t => t.value === firstItem.duration)?.label || `${firstItem.duration} hours`,
-        pickupLocation: firstItem.pickupLocation || "Main Station",
-        startDate: firstItem.startDate || new Date().toISOString().split('T')[0],
-        startTime: firstItem.startTime || "10:00 AM"
+        pickupLocation: firstItem.pickupLocation,
+        startDate: firstItem.startDate,
+        startTime: firstItem.startTime,
+        endTime: firstItem.endTime
       }
     });
   };
@@ -90,23 +82,21 @@ const CartPage = () => {
                           <span className="font-medium capitalize">{item.color}</span>
                         </div>
                         <div>
-                          <span className="text-sm">Duration: </span>
-                          <span className="font-medium">
-                            {timeOptions.find(t => t.value === item.duration)?.label}
-                          </span>
+                          <span className="text-sm">Quantity: </span>
+                          <span className="font-medium">{item.quantity}</span>
                         </div>
                       </div>
                       <div className="flex justify-between mt-2">
                         <div>
                           <span className="text-sm">Pickup: </span>
-                          <span className="font-medium">{item.pickupLocation || "Main Station"}</span>
+                          <span className="font-medium">{item.pickupLocation}</span>
                         </div>
-                        <div>
-                          <span className="text-sm">Date/Time: </span>
-                          <span className="font-medium">
-                            {item.startDate || new Date().toISOString().split('T')[0]} at {item.startTime || "10:00 AM"}
-                          </span>
-                        </div>
+                      </div>
+                      <div className="mt-2 flex items-center gap-2 text-sm">
+                        <FiClock />
+                        <span>
+                          {item.startDate} | {item.startTime} - {item.endTime}
+                        </span>
                       </div>
                     </div>
                     <div className="text-right">
