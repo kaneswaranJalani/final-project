@@ -12,7 +12,7 @@ import UserRegister from "./pages/UserRegister";
 import PartnerRegister from "./pages/PartnerRegister";
 import Feedback from "./pages/Feedback";
 import Payment from "./pages/Payment";
-import AdminDashboard from "./pages/DashboardOverview";
+// import AdminDashboard from "./pages/DashboardOverview";
 import SuccessfulRegister from "./pages/SuccessfulRegister";
 import Item from "./pages/BikeList";
 import Terms from "./pages/Terms";
@@ -30,6 +30,7 @@ import BikeSelection from "./pages/BikeSelection";
 import BikeRental from "./pages/BikeRental";
 import CartPage from "./pages/CartPage";
 import AdminLayout from "./layouts/AdminLayout";
+import OTPForm from "./pages/OTPForm";
 
 // ✅ Load Stripe public key (replace with your own test/public key)
 const stripe = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
@@ -61,7 +62,7 @@ function App() {
           }
         />
 
-        <Route path="/AdminDashboard" element={<AdminDashboard />} />
+        {/* <Route path="/AdminDashboard" element={<AdminDashboard />} /> */}
         <Route path="/SuccessfulRegister" element={<SuccessfulRegister />} />
         <Route path="/Item" element={<Item />} />
         <Route path="/Terms" element={<Terms />} />
@@ -79,6 +80,7 @@ function App() {
         <Route path="/BikeRental" element={<BikeRental />} />
         <Route path="/CartPage" element={<CartPage />} />
         <Route path="/admin/*" element={<AdminLayout />} />
+        <Route path="/otp" element={<OTPForm />} /> 
         
         {/* Fallback route */}
       </Routes>

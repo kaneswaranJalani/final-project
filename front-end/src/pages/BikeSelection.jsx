@@ -5,14 +5,6 @@ import {
   FiPlus, FiMinus, FiMapPin, FiCalendar, FiAlertCircle
 } from "react-icons/fi";
 
-const timeOptions = [
-  { value: 1, label: "1 hour" },
-  { value: 4, label: "4 hours" },
-  { value: 8, label: "8 hours" },
-  { value: 24, label: "1 day" },
-  { value: 168, label: "1 week" }
-];
-
 const colorOptions = [
   { value: "red", label: "Red" },
   { value: "blue", label: "Blue" },
@@ -20,16 +12,34 @@ const colorOptions = [
   { value: "green", label: "Green" }
 ];
 
+const jaffnaAreas = [
+  "Nallur",
+  "Jaffna Town",
+  "Chundikuli",
+  "Kokuvil",
+  "Thirunelveli",
+  "Ariyalai",
+  "Manipay",
+  "Chavakachcheri",
+  "Point Pedro",
+  "Karainagar",
+  "Tellippalai",
+  "Uduvil",
+  "Sandilipay",
+  "Kopay",
+  "Atchuveli"
+];
+
 const BikeSelection = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const selectedBike = location.state?.selectedBike;
 
-  const [selectedTime, setSelectedTime] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedStartTime, setSelectedStartTime] = useState("");
+  const [selectedEndTime, setSelectedEndTime] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isAddedToCart, setIsAddedToCart] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
@@ -43,6 +53,9 @@ const BikeSelection = () => {
     
     setSelectedDate(currentDate);
     setSelectedStartTime(currentTime);
+    // Set default end time to 1 hour later
+    const endTime = new Date(now.getTime() + 60 * 60 * 1000);
+    setSelectedEndTime(endTime.toTimeString().substring(0, 5));
   }, []);
 
   if (!selectedBike) {
@@ -50,17 +63,34 @@ const BikeSelection = () => {
   }
 
   const calculateTotalPrice = () => {
-    return selectedBike.price * selectedTime * quantity;
+    // Calculate hours between start and end time
+    const start = new Date(`${selectedDate}T${selectedStartTime}`);
+    const end = new Date(`${selectedDate}T${selectedEndTime}`);
+    
+    // If end time is earlier than start time, assume it's the next day
+    if (end < start) {
+      end.setDate(end.getDate() + 1);
+    }
+    
+    const diffInHours = (end - start) / (1000 * 60 * 60);
+    return selectedBike.price * diffInHours * quantity;
   };
 
-  const validateDate = (date, time) => {
-    const selectedDateTime = new Date(`${date}T${time}`);
+  const validateDateTime = () => {
+    const start = new Date(`${selectedDate}T${selectedStartTime}`);
+    const end = new Date(`${selectedDate}T${selectedEndTime}`);
     const now = new Date();
     
-    if (selectedDateTime < now) {
-      setDateError("Selected date/time cannot be in the past");
+    if (start < now) {
+      setDateError("Start time cannot be in the past");
       return false;
     }
+    
+    if (end <= start) {
+      setDateError("Return time must be after start time");
+      return false;
+    }
+    
     setDateError("");
     return true;
   };
@@ -68,33 +98,39 @@ const BikeSelection = () => {
   const handleDateChange = (e) => {
     const newDate = e.target.value;
     setSelectedDate(newDate);
-    validateDate(newDate, selectedStartTime);
+    validateDateTime();
   };
 
-  const handleTimeChange = (e) => {
+  const handleStartTimeChange = (e) => {
     const newTime = e.target.value;
     setSelectedStartTime(newTime);
-    validateDate(selectedDate, newTime);
+    validateDateTime();
+  };
+
+  const handleEndTimeChange = (e) => {
+    const newTime = e.target.value;
+    setSelectedEndTime(newTime);
+    validateDateTime();
   };
 
   const handlePayment = () => {
-    if (!validateDate(selectedDate, selectedStartTime)) return;
+    if (!validateDateTime()) return;
     
     navigate("/payment", {
       state: {
         name: selectedBike.name,
         price: calculateTotalPrice(),
         color: selectedColor,
-        duration: timeOptions.find(t => t.value === selectedTime)?.label,
         pickupLocation: selectedLocation,
         startDate: selectedDate,
-        startTime: selectedStartTime
+        startTime: selectedStartTime,
+        endTime: selectedEndTime
       }
     });
   };
 
   const handleAddToCart = () => {
-    if (!validateDate(selectedDate, selectedStartTime)) return;
+    if (!validateDateTime()) return;
     
     setIsAddedToCart(true);
     setShowCartModal(true);
@@ -106,12 +142,12 @@ const BikeSelection = () => {
       state: {
         cartItems: [{
           bike: selectedBike,
-          duration: selectedTime,
           color: selectedColor,
           quantity: quantity,
           pickupLocation: selectedLocation,
           startDate: selectedDate,
           startTime: selectedStartTime,
+          endTime: selectedEndTime,
           totalPrice: calculateTotalPrice()
         }]
       }
@@ -137,7 +173,7 @@ const BikeSelection = () => {
                 <p className="font-medium">{selectedBike.name}</p>
                 <p className="text-sm text-gray-600">Color: {selectedColor}</p>
                 <p className="text-sm text-gray-600">
-                  Duration: {timeOptions.find(t => t.value === selectedTime)?.label}
+                  Time: {selectedStartTime} - {selectedEndTime}
                 </p>
                 <p className="text-sm text-gray-600">Quantity: {quantity}</p>
                 <p className="font-bold text-[#67103d]">Rs. {calculateTotalPrice()}</p>
@@ -197,26 +233,6 @@ const BikeSelection = () => {
             </div>
           </div>
 
-          {/* Duration */}
-          <div className="mt-6">
-            <label className="block mb-2 text-sm font-medium flex items-center gap-2"><FiClock /> Rental Duration</label>
-            <div className="grid grid-cols-3 gap-2">
-              {timeOptions.map(option => (
-                <button
-                  key={option.value}
-                  onClick={() => setSelectedTime(option.value)}
-                  className={`p-2 rounded-lg border-2 ${
-                    selectedTime === option.value
-                      ? "bg-[#67103d] text-white border-[#67103d]"
-                      : "border-gray-300 hover:bg-gray-50"
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Quantity */}
           <div className="mt-6">
             <label className="block text-sm font-medium mb-2">Quantity</label>
@@ -234,14 +250,17 @@ const BikeSelection = () => {
           {/* Pickup Location */}
           <div className="mt-6">
             <label className="block text-sm font-medium mb-2 flex items-center gap-2"><FiMapPin /> Pickup Location</label>
-            <input
-              type="text"
+            <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
               className="w-full border rounded-lg p-2"
-              placeholder="Enter location"
               required
-            />
+            >
+              <option value="">Select a location</option>
+              {jaffnaAreas.map(area => (
+                <option key={area} value={area}>{area}</option>
+              ))}
+            </select>
           </div>
 
           {/* Start Date */}
@@ -263,7 +282,19 @@ const BikeSelection = () => {
             <input
               type="time"
               value={selectedStartTime}
-              onChange={handleTimeChange}
+              onChange={handleStartTimeChange}
+              className="w-full border rounded-lg p-2"
+              required
+            />
+          </div>
+
+          {/* Return Time */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2"><FiClock /> Return Time</label>
+            <input
+              type="time"
+              value={selectedEndTime}
+              onChange={handleEndTimeChange}
               className="w-full border rounded-lg p-2"
               required
             />
@@ -283,8 +314,8 @@ const BikeSelection = () => {
               <span>Rs. {selectedBike.price}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span>Duration:</span>
-              <span>{timeOptions.find(t => t.value === selectedTime)?.label}</span>
+              <span>Rental Period:</span>
+              <span>{selectedStartTime} - {selectedEndTime}</span>
             </div>
             <div className="flex justify-between mb-2">
               <span>Quantity:</span>
