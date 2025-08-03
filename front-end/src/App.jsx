@@ -31,6 +31,7 @@ import BikeRental from "./pages/BikeRental";
 import CartPage from "./pages/CartPage";
 import AdminLayout from "./layouts/AdminLayout";
 import OTPForm from "./pages/OTPForm";
+import UserDashboard from "./pages/UserDashboard";
 
 // ✅ Load Stripe public key (replace with your own test/public key)
 const stripe = import.meta.env.VITE_STRIPE_PUBLIC_KEY;
@@ -81,6 +82,7 @@ function App() {
         <Route path="/CartPage" element={<CartPage />} />
         <Route path="/admin/*" element={<AdminLayout />} />
         <Route path="/otp" element={<OTPForm />} /> 
+        <Route path="/UserDashboard" element={<UserDashboard />} />
         
         {/* Fallback route */}
       </Routes>

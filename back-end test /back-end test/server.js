@@ -14,6 +14,7 @@ import adminRoutes from './routes/adminRoutes.js'; // Import admin routes
 import partnerRoutes from './routes/partnerRoutes.js'; // Import partner routes
 import uploadRoute from './routes/upload.js'; // Import upload routes
 import otpRoutes from './routes/otpRoutes.js'; // Import OTP routes
+import rentalRoutes from './routes/rentalRoutes.js'; // Import rental routes
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ app.use('/api/admin', adminRoutes); // Admin routes
 app.use('/api/partners', partnerRoutes); // Partner routes
 app.use('/api/upload', uploadRoute);
 app.use('/api/otp', otpRoutes); // OTP routes
+app.use('/api/rentals', rentalRoutes); // Rental routes
 
 
 

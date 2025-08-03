@@ -1,9 +1,9 @@
-import User from "../models/User.js";
-import Partner from "../models/Partner.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/User.js';
+import Partner from '../models/Partner.js';
+// import Admin from '../models/Admin.js'; // if you have Admin model
 
-const JWT_SECRET = "your_jwt_secret"; 
 
 // ✅ Register - User
 export const registerUser = async (req, res) => {
@@ -16,30 +16,33 @@ export const registerUser = async (req, res) => {
       secondaryPhone,
       address,
       idProof,
-      rentalPreferences,
+      rentalPreferences
     } = req.body;
 
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(400).json({ message: "Email already exists" });
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
+      return res.status(400).json({ message: "User already exists" });
 
-    const hashed = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
       name,
       email,
-      password: hashed,
-      role: "user",
+      password: hashedPassword,
       primaryPhone,
       secondaryPhone,
       address,
       idProof,
-      rentalPreferences,
+      rentalPreferences
     });
 
     await user.save();
-    res.status(201).json({ message: "User registered", user });
+    res.status(201).json({
+      message: "User registered successfully. Please verify your phone via OTP.",
+      user
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -60,11 +63,12 @@ export const registerPartner = async (req, res) => {
       additionalDetails,
       partnerTier,
       primaryPhone,
-      secondaryPhone,
+      secondaryPhone
     } = req.body;
 
     const exists = await Partner.findOne({ email });
-    if (exists) return res.status(400).json({ message: "Email already exists" });
+    if (exists)
+      return res.status(400).json({ message: "Email already exists" });
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -92,6 +96,7 @@ export const registerPartner = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // ✅ Login - Shared for User & Partner
 // export const login = async (req, res) => {
@@ -160,28 +165,53 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
     let account = await User.findOne({ email });
     let role = null;
 
     if (account) {
-      role = account.role; // 'user' or 'admin'
+      role = 'user';
     } else {
       account = await Partner.findOne({ email });
-      if (account) role = "partner";
+      if (account) {
+        role = 'partner';
+      } else {
+        account = await Admin.findOne({ email });
+        if (account) role = 'admin';
+      }
     }
 
-    if (!account) return res.status(404).json({ message: "Account not found" });
+    if (!account) {
+      console.log(`Login failed: No account found with email ${email}`);
+      return res.status(404).json({ message: "Account not found" });
+    }
 
-    if (role === "partner" && !account.verified) {
+    if (role === 'partner' && !account.verified) {
       return res.status(403).json({ message: "Your account is not verified by admin yet." });
     }
 
+    if (!account.password) {
+      console.log(`Login failed: Password missing for email ${email}`);
+      return res.status(400).json({ message: "Invalid account credentials" });
+    }
+
     const isMatch = await bcrypt.compare(password, account.password);
-    if (!isMatch) return res.status(401).json({ message: "Incorrect password" });
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect password" });
+    }
 
-    const token = jwt.sign({ id: account._id, role }, JWT_SECRET, { expiresIn: "7d" });
+    const JWT_SECRET = process.env.JWT_SECRET;
+    if (!JWT_SECRET) {
+      console.error("JWT_SECRET not defined");
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
-    res.status(200).json({
+    const token = jwt.sign({ id: account._id, role }, JWT_SECRET, { expiresIn: '7d' });
+
+    return res.status(200).json({
       message: "Login successful",
       token,
       user: {
@@ -189,9 +219,7 @@ export const login = async (req, res) => {
         name: account.name,
         email: account.email,
         role,
-        ...(role === "admin" && {
-          admin: true, // Optional: helps frontend with privileges
-        }),
+        ...(role === "admin" && { admin: true }),
         ...(role === "partner" && {
           phone: account.phone,
           nic: account.nic,
@@ -209,18 +237,16 @@ export const login = async (req, res) => {
           address: account.address,
           idProof: account.idProof,
           rentalPreferences: account.rentalPreferences,
+          isVerified: account.isVerified,
         }),
       },
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Login Error:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
-
 
 
 // Get user by ID
@@ -297,4 +323,26 @@ export const updateUserRole = async (req, res) => {
   }
 };
 
+// Get user by ID
+// export const getUserById = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.params.id);
+//     if (!user) return res.status(404).json({ error: "User not found" });
+//     res.json(user);
+//   } catch (err) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
 
+// // Update user by ID
+// export const updateUserById = async (req, res) => {
+//   try {
+//     const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
+//       new: true,
+//     });
+//     if (!updated) return res.status(404).json({ error: "User not found" });
+//     res.json(updated);
+//   } catch (err) {
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };

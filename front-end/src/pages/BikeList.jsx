@@ -103,7 +103,7 @@ const BikeList = () => {
         </p>
         <div className="flex justify-center mt-6">
           <button
-            onClick={() => navigate('/RentalHistory')}
+            onClick={() => navigate('/UserDashboard')}
             className="flex items-center gap-2 px-4 py-2 bg-[#67103d] text-white rounded-full hover:bg-[#500c2e] transition"
           >
             <FiBook />

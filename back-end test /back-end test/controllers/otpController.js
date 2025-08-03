@@ -1,49 +1,63 @@
-import otpGenerator from 'otp-generator';
-import nodemailer from 'nodemailer';
 import OTP from '../models/otpModel.js';
+import User from '../models/User.js';
+import otpGenerator from 'otp-generator';
 
 // Send OTP
 export const sendOTP = async (req, res) => {
-  const { email } = req.body;
+  const { phone } = req.body;
 
-  if (!email) return res.status(400).json({ message: "Email is required" });
+  if (!phone) {
+    return res.status(400).json({ success: false, message: "Phone number is required" });
+  }
 
-  const otp = otpGenerator.generate(6, { digits: true, alphabets: false, upperCase: false });
-
-  // Save OTP to DB
-  await OTP.create({ email, otp });
-
-  // Send Email
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+  const otpCode = otpGenerator.generate(6, {
+    digits: true,
+    alphabets: false,
+    upperCase: false,
+    specialChars: false,
   });
 
-  const mailOptions = {
-    from: `RideLoop <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Your OTP Code',
-    text: `Your OTP code is ${otp}. It is valid for 5 minutes.`,
-  };
+  await OTP.deleteMany({ phone }); // Remove previous OTPs for the phone
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) return res.status(500).json({ message: "Failed to send OTP", error });
-    res.status(200).json({ message: "OTP sent successfully" });
+  const otp = new OTP({ phone, otp: otpCode });
+  await otp.save();
+
+  // Replace this with actual SMS service
+  console.log(`OTP for ${phone}: ${otpCode}`);
+
+  res.status(200).json({
+    success: true,
+    message: "OTP sent successfully",
   });
 };
 
 // Verify OTP
 export const verifyOTP = async (req, res) => {
-  const { email, otp } = req.body;
+  const { phone, otp } = req.body;
 
-  const existing = await OTP.findOne({ email, otp });
+  if (!phone || !otp) {
+    return res.status(400).json({ success: false, message: "Phone and OTP are required" });
+  }
 
-  if (!existing) return res.status(400).json({ message: "Invalid or expired OTP" });
+  const record = await OTP.findOne({ phone, otp });
 
-  await OTP.deleteMany({ email }); // Clear used OTPs
+  if (!record) {
+    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+  }
 
-  res.status(200).json({ message: "OTP verified successfully" });
+  const user = await User.findOneAndUpdate(
+    { primaryPhone: phone },
+    { isVerified: true }
+  );
+
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  await OTP.deleteMany({ phone }); // Clear used OTPs
+
+  res.status(200).json({
+    success: true,
+    message: "Phone number verified successfully",
+  });
 };

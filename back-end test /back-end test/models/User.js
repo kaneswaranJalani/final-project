@@ -11,6 +11,8 @@ const userSchema = new mongoose.Schema({
   address: { type: String, required: false },
   idProof: { type: String, required: false },
   rentalPreferences: { type: String, required: false },
+
+  isVerified: { type: Boolean, default: false },
 }, { timestamps: true });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);

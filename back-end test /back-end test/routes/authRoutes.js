@@ -12,26 +12,16 @@ import {
 
 const router = express.Router();
 
-// POST routes
+// Auth Routes
 router.post("/register/user", registerUser);
 router.post("/register/partner", registerPartner);
 router.post("/login", login);
 
-
-// GET route - Get user by ID
-router.get("/user/:id", getUserById);
-
-// GET all users
+// User Routes
 router.get("/all", getAllUsers);
-
-// PUT route - Update user by ID
-router.put("/user/:id", updateUserById);
-
-
-// DELETE route - Delete user by ID
+router.get("/:id", getUserById);           // e.g., GET /api/users/688ee85...
+router.put("/:id", updateUserById);        // e.g., PUT /api/users/688ee85...
 router.delete("/:id", deleteUserById);
-
-//PUT route - Update user role
-router.put("/:id", updateUserRole);
+router.put("/:id/role", updateUserRole);   // PUT /api/users/688ee85/role
 
 export default router;
